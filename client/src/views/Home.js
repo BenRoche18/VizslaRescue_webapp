@@ -7,8 +7,6 @@ const styles = (theme) => ({
 
 class Home extends React.Component {
   render() {
-    const { classes } = this.props;
-
     return <div>
       HOME
     </div>;

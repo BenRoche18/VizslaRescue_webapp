@@ -24,6 +24,6 @@ public class Dog {
 
     private HipScore hipScore;
 
-    private String damId;
-    private String sireId;
+    private Parent dam;
+    private Parent sire;
 }

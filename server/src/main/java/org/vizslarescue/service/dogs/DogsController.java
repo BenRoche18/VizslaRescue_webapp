@@ -3,11 +3,13 @@ package org.vizslarescue.service.dogs;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.vizslarescue.Utils.Utils;
 import org.vizslarescue.model.Dog;
 
@@ -45,7 +48,13 @@ public class DogsController {
     public Dog getDog(
         @PathVariable String id
     ) {
-        return null;//repo.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("A dog with id '%s' was not found.", id)));
+        Dog dog = mongoTemplate.findById(id, Dog.class);
+
+        if(dog == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find dog with provided id");
+        } else {
+            return dog;
+        }
     }
 
     @PostMapping("/api/dog")

@@ -1,20 +1,14 @@
 import { withStyles } from "@material-ui/core";
-import { DataGrid } from "@material-ui/data-grid"
+import { DataGrid, GridToolbarContainer, GridToolbarExport } from "@material-ui/data-grid"
 import React from "react";
 import axios from 'axios';
+import Dog from "./Dog";
 
 const styles = (theme) => ({
   gridContainer: {
     width: "100%",
   },
 });
-
-const columns = [
-  { field: "name", headerName: "Name", width: 250 },
-  { field: "breeders", headerName: "Breeders", width: 250},
-  { field: "gender", headerName: "Gender", width: 150},
-  { field: "dob", headerName: "Date of Birth", width: 250}
-]
 
 class Dogs extends React.Component {
   state = {
@@ -29,13 +23,23 @@ class Dogs extends React.Component {
     }
   }
 
+  columns = [
+    { 
+      field: "name", 
+      headerName: "Name", 
+      width: 250, 
+      renderCell: (cell) => <Dog name={cell.row.name} id={cell.row.id}/>
+    },
+    { field: "breeders", headerName: "Breeders", width: 250 },
+    { field: "gender", headerName: "Gender", width: 150} ,
+    { field: "dob", headerName: "Date of Birth", width: 250 }
+  ]
+
   componentDidMount() {
     this.fetchDogs();
   }
 
   async fetchDogs() {
-    console.log(this.state.filter)
-
     const params = {
       page: this.state.page,
       pageSize: this.state.pageSize,
@@ -54,12 +58,18 @@ class Dogs extends React.Component {
       })
   }
 
+  renderToolbar() {
+    return <GridToolbarContainer>
+      <GridToolbarExport csvOptions={{ allColumns: true, fileName: "export" }}/>
+    </GridToolbarContainer>
+  }
+
   render() {
     const { classes } = this.props;
 
     return <div className={classes.gridContainer}>
       <DataGrid
-        columns={columns}
+        columns={this.columns}
         rows={this.state.dogs}
         paginationMode="server"
         sortingMode="server"
@@ -73,7 +83,9 @@ class Dogs extends React.Component {
         page={this.state.page}
         onSortModelChange={(model) => this.setState({ sortKeys: model, loading: true }, () => this.fetchDogs())}
         onFilterModelChange={(model) => this.setState({ filter: model, loading: true }, () => this.fetchDogs())}
+        components={{ Toolbar: this.renderToolbar }}
       />
+      { this.state.dialog }
     </div>;
   }
 }

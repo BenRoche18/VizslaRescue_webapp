@@ -1,8 +1,10 @@
-import { withStyles } from "@material-ui/core";
-import { DataGrid, GridToolbarContainer, GridToolbarExport } from "@material-ui/data-grid"
+import { Box, Button, withStyles } from "@material-ui/core";
+import { DataGrid, GridToolbarContainer, GridToolbarExport, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector } from "@material-ui/data-grid"
 import React from "react";
 import axios from 'axios';
 import Dog from "./Dog";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEdit } from "@fortawesome/free-solid-svg-icons";
 
 const styles = (theme) => ({
   gridContainer: {
@@ -30,9 +32,22 @@ class Dogs extends React.Component {
       width: 250, 
       renderCell: (cell) => <Dog name={cell.row.name} id={cell.row.id}/>
     },
-    { field: "breeders", headerName: "Breeders", width: 250 },
-    { field: "gender", headerName: "Gender", width: 150} ,
-    { field: "dob", headerName: "Date of Birth", width: 250 }
+    { 
+      field: "breeders",
+      headerName: "Breeders",
+      width: 250
+    },
+    { 
+      field: "gender",
+      headerName: "Gender",
+      width: 150
+    },
+    { 
+      field: "dob", 
+      headerName: "Date of Birth", 
+      width: 250,
+      renderCell: (cell) => new Date(cell.row.dob).toLocaleDateString()
+    }
   ]
 
   componentDidMount() {
@@ -60,7 +75,23 @@ class Dogs extends React.Component {
 
   renderToolbar() {
     return <GridToolbarContainer>
-      <GridToolbarExport csvOptions={{ allColumns: true, fileName: "export" }}/>
+      <Box display="flex" style={{ width: "100%" }}>
+        <Box>
+          <Button 
+            color="primary" 
+            startIcon={<FontAwesomeIcon icon={faEdit} size="md" />}
+            size="small"
+          >
+            Create
+          </Button>
+        </Box>
+        <Box style={{ marginLeft: "auto" }}>
+          <GridToolbarColumnsButton />
+          <GridToolbarFilterButton />
+          <GridToolbarDensitySelector />
+          <GridToolbarExport csvOptions={{ allColumns: true, fileName: "export" }}/>
+        </Box>
+      </Box>
     </GridToolbarContainer>
   }
 

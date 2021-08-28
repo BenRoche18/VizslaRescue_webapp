@@ -3,7 +3,6 @@ package org.vizslarescue.service.dogs;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -70,23 +70,22 @@ public class DogsController {
     @PutMapping("/api/dog/{id}")
     public Dog editDog(
         @PathVariable String id,
-        @RequestParam(required = false) String name
+        @RequestBody(required = false) Dog reqDog
     ) {
       Dog dog = getDog(id);
 
-      if (name != null && !name.isBlank())
-      {
-          dog.setName(name);
-      }
+      reqDog.setId(dog.getId());
 
-      //repo.save(dog);
-      return dog;
+      mongoTemplate.save(reqDog);
+      return reqDog;
     }
 
     @DeleteMapping("/api/dog/{id}")
     public void deleteDog(
         @PathVariable String id
     ) {
-        //repo.deleteById(id);
+        Dog dog = getDog(id);
+
+        mongoTemplate.remove(dog);
     }
 }

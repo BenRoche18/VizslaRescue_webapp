@@ -18,7 +18,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<lombok.version>1.18.12</lombok.version>
+		<lombok.version>1.18.20</lombok.version>
 		<frontend-src-dir>${project.basedir}/client</frontend-src-dir>
 		<node.version>v12.3.1</node.version>
 		<npmVersion>6.13.1</npmVersion>

@@ -1,4 +1,4 @@
-package org.vizslarescue.service.dogs;
+package org.vizslarescue.service.breeders;
 
 import java.util.List;
 
@@ -14,25 +14,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.vizslarescue.Utils.Utils;
-import org.vizslarescue.model.dog.Dog;
+import org.vizslarescue.model.breeder.Breeder;
+
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 
 @RestController
-public class DogsController {
+public class BreedersController {
 
     @Autowired
     MongoTemplate mongoTemplate;
 
-    @GetMapping("/api/dogs")
-    public Page<Dog> getDogs(
+    @GetMapping("/api/breeders")
+    public Page<Breeder> getBreeders(
         @RequestParam(defaultValue = "0") String page,
         @RequestParam(defaultValue = "100") String pageSize,
-        @RequestParam(required = false, defaultValue = "")List<String> sortKeys,
+        @RequestParam(required = false, defaultValue = "") List<String> sortKeys,
         @RequestParam(required = false, defaultValue = "") List<String> filters
 
     ) {
@@ -41,48 +42,48 @@ public class DogsController {
         
         query = query.with(pager);
 
-        return new PageImpl<Dog>(mongoTemplate.find(query, Dog.class), pager, mongoTemplate.count(query.skip(-1).limit(-1), Dog.class));
+        return new PageImpl<Breeder>(mongoTemplate.find(query, Breeder.class), pager, mongoTemplate.count(query.skip(-1).limit(-1), Breeder.class));
     }
 
-    @GetMapping("/api/dog/{id}")
-    public Dog getDog(
+    @GetMapping("/api/breeder/{id}")
+    public Breeder getBreeder(
         @PathVariable String id
     ) {
-        Dog dog = mongoTemplate.findById(id, Dog.class);
+        Breeder breeder = mongoTemplate.findById(id, Breeder.class);
 
-        if(dog == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find dog with provided id");
+        if(breeder == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find breeder with provided name");
         } else {
-            return dog;
+            return breeder;
         }
     }
 
-    @PostMapping("/api/dog")
-    public void addDog(
-        @RequestBody(required = true) Dog dog
+    @PostMapping("/api/breeder")
+    public void addBreeder(
+        @RequestBody(required = true) Breeder breeder
     ) {
-      mongoTemplate.save(dog);
+      mongoTemplate.save(breeder);
     }
 
-    @PutMapping("/api/dog/{id}")
-    public Dog editDog(
+    @PutMapping("/api/breeder/{id}")
+    public Breeder editBreeder(
         @PathVariable String id,
-        @RequestBody(required = false) Dog dog
+        @RequestBody(required = false) Breeder breeder
     ) {
-      Dog existingDog = getDog(id);
+      Breeder existingBreeder = getBreeder(id);
 
-      dog.setId(existingDog.getId());
+      breeder.setId(existingBreeder.getId());
 
-      mongoTemplate.save(dog);
-      return dog;
+      mongoTemplate.save(breeder);
+      return breeder;
     }
 
-    @DeleteMapping("/api/dog/{id}")
-    public void deleteDog(
+    @DeleteMapping("/api/breeder/{id}")
+    public void deleteBreeder(
         @PathVariable String id
     ) {
-        Dog dog = getDog(id);
+        Breeder breeder = getBreeder(id);
 
-        mongoTemplate.remove(dog);
+        mongoTemplate.remove(breeder);
     }
 }

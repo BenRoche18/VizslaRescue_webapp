@@ -1,11 +1,11 @@
-package org.vizslarescue.model;
+package org.vizslarescue.model.litter;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class Parent {
-    private String id;
+public class Sire {
     private String name;
+    private String brs;
 }

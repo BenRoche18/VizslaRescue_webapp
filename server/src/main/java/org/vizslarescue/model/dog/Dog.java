@@ -1,4 +1,4 @@
-package org.vizslarescue.model;
+package org.vizslarescue.model.dog;
 
 import java.util.Date;
 
@@ -8,22 +8,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
 @Data
-@Document(collection = "BreedRecordSupplement")
+@Document(collection = "Dogs")
 public class Dog {
     @Id
     private String id;
 
     private String name;
-    private String breeders;
     private String gender;
-    private String brs;
-    private Date dob;
-    private Boolean wasCesarean;
-    private Date lastLitter;
+    private String litter_id;
     private String additionalDetails;
 
     private HipScore hipScore;
-
-    private Parent dam;
-    private Parent sire;
 }

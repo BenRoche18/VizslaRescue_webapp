@@ -10,18 +10,12 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.core.query.Query;
 
 public final class Utils {
-    
-    public static PageRequest getPager(int pageSize, int page, List<String> sortKeys) {
+
+    public static PageRequest getPager(int pageSize, int page, List<SortKey> sortKeys) {
         PageRequest pager;
 
         if(sortKeys != null && sortKeys.size() > 0) {
-            List<SortKey> mappedSortKeys = new ArrayList<SortKey>();
-
-            for(String sortKey : sortKeys) {
-                mappedSortKeys.add(SortKey.fromString(sortKey));
-            }
-
-            pager = PageRequest.of(page, pageSize, Utils.getSort(mappedSortKeys));
+            pager = PageRequest.of(page, pageSize, Utils.getSort(sortKeys));
         } else {
             pager = PageRequest.of(page, pageSize);
         }
@@ -43,15 +37,35 @@ public final class Utils {
         return Sort.by(orders);
     }
 
-    public static Query getQuery(List<String> filters) {
+    public static Query getQuery(List<FilterKey> filters) {
         Query query = new Query();
 
         if(filters != null && filters.size() > 0) {
-            for(String filter : filters) {
-                query.addCriteria(FilterKey.fromString(filter).getCriteria());
+            for(FilterKey filter : filters) {
+                query.addCriteria(filter.getCriteria());
             }
         }
 
         return query;
+    }
+
+    public static List<SortKey> mapSortKeys(List<String> sortStrings) {
+        List<SortKey> sortKeys = new ArrayList<SortKey>();
+
+        for(String sort : sortStrings) {
+            sortKeys.add(SortKey.fromString(sort));
+        }
+
+        return sortKeys;
+    }
+
+    public static List<FilterKey> mapFilterKeys(List<String> filterStrings) {
+        List<FilterKey> filterKeys = new ArrayList<FilterKey>();
+
+        for(String filter : filterStrings) {
+            filterKeys.add(FilterKey.fromString(filter));
+        }
+
+        return filterKeys;
     }
 }

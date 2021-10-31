@@ -7,10 +7,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class HipScore {
+public class ElbowScore {
     private Date date_of_test;
-    private int left;
-    private int right;
-    private String brs;
-    private int total;
+    private int score;
 }

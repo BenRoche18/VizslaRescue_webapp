@@ -1,5 +1,6 @@
 package org.vizslarescue.service.dogs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.vizslarescue.Utils.Utils;
+import org.vizslarescue.model.count.Count;
 import org.vizslarescue.model.dog.Dog;
 
 
@@ -30,18 +35,37 @@ public class DogsController {
 
     @GetMapping("/api/dogs")
     public Page<Dog> getDogs(
-        @RequestParam(defaultValue = "0") String page,
-        @RequestParam(defaultValue = "100") String pageSize,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "100") int pageSize,
         @RequestParam(required = false, defaultValue = "")List<String> sortKeys,
         @RequestParam(required = false, defaultValue = "") List<String> filters
 
     ) {
-        PageRequest pager = Utils.getPager(Integer.parseInt(pageSize), Integer.parseInt(page), Utils.mapSortKeys(sortKeys));
-        Query query = Utils.getQuery(Utils.mapFilterKeys(filters));
-        
-        query = query.with(pager);
+        List<AggregationOperation> operations = new ArrayList<AggregationOperation>();
+        operations.add(Dog.addFieldsOperation());
 
-        return new PageImpl<Dog>(mongoTemplate.find(query, Dog.class), pager, mongoTemplate.count(query.skip(-1).limit(-1), Dog.class));
+        MatchOperation matchOperation = Utils.getMatchOperation(Utils.mapFilterKeys(filters));
+        if(matchOperation != null) {
+            operations.add(matchOperation);
+        }
+
+        List<AggregationOperation> countOperations = new ArrayList<AggregationOperation>(operations);
+        countOperations.add(Aggregation.group().count().as("total"));
+        Count count = mongoTemplate.aggregate(Aggregation.newAggregation(countOperations), "Dogs", Count.class).getUniqueMappedResult();
+    
+        SortOperation sortOperation = Utils.getSortOperation(Utils.mapSortKeys(sortKeys));
+        if(sortOperation != null) {
+            operations.add(sortOperation);
+        }
+
+        operations.add(Aggregation.skip(Long.valueOf(pageSize * page)));
+        operations.add(Aggregation.limit(pageSize));
+
+        PageRequest pager = Utils.getPager(pageSize, page, Utils.mapSortKeys(sortKeys));
+
+        System.out.println(Aggregation.newAggregation(Dog.class, operations));
+
+        return new PageImpl<Dog>(mongoTemplate.aggregate(Aggregation.newAggregation(Dog.class, operations), Dog.class).getMappedResults(), pager, count != null ? count.getTotal() : 0);
     }
 
     @GetMapping("/api/dog/{id}")

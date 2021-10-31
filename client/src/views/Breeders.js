@@ -4,7 +4,7 @@ import React from "react";
 import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import Dog from "../components/Dog";
+import Breeder from "../components/Breeder";
 
 const styles = (theme) => ({
   gridContainer: {
@@ -12,13 +12,13 @@ const styles = (theme) => ({
   },
 });
 
-class Dogs extends React.Component {
+class Breeders extends React.Component {
   state = {
     rowCount: 0,
     pageSize: 25,
     page: 0,
     loading: true,
-    dogs: [],
+    breeders: [],
     sortKeys: [],
     filter: {
       items: []
@@ -27,42 +27,18 @@ class Dogs extends React.Component {
 
   columns = [
     { 
-      field: "name", 
-      headerName: "Name", 
-      width: 250, 
-      renderCell: (cell) => <Dog name={cell.row.name} id={cell.row.id}/>
-    },
-    { 
-      field: "gender",
-      headerName: "Gender",
-      width: 150
-    },
-    { 
-      field: "additional_details",
-      headerName: "Additional Details",
-      width: 200
-    },
-    {
-      field: "hip_score.total",
-      headerName: "Hip Score", 
-      width: 250,
-      type: 'number',
-      renderCell: (cell) => !cell.row.hip_score ? "-" : (cell.row.hip_score.left + " : " + cell.row.hip_score.right)
-    },
-    { 
-      field: "elbow_score",
-      headerName: "Elbow Score", 
-      width: 250,
-      type: 'number',
-      renderCell: (cell) => cell.row.elbow_score ?? "-"
+      field: "names", 
+      headerName: "Names", 
+      width: 500, 
+      renderCell: (cell) => <Breeder name={cell.row.names} id={cell.row.id}/>
     }
   ]
 
   componentDidMount() {
-    this.fetchDogs();
+    this.fetchBreeders();
   }
 
-  async fetchDogs() {
+  async fetchBreeders() {
     const params = {
       page: this.state.page,
       pageSize: this.state.pageSize,
@@ -72,10 +48,10 @@ class Dogs extends React.Component {
         .join(",")
     }
 
-    axios.get("/api/dogs", { params })
+    axios.get("/api/breeders", { params })
       .then(res => {
         this.setState({ 
-          dogs: res.data.content,
+          breeders: res.data.content,
           rowCount: res.data.totalElements,
           loading: false })
       })
@@ -109,19 +85,19 @@ class Dogs extends React.Component {
     return <div className={classes.gridContainer}>
       <DataGrid
         columns={this.columns}
-        rows={this.state.dogs}
+        rows={this.state.breeders}
         paginationMode="server"
         sortingMode="server"
         filterMode="server"
         autoHeight
         loading={this.state.loading}
-        onPageChange={(page) => this.setState({ page: page, loading: true }, () => this.fetchDogs())}
-        onPageSizeChange={(size) => this.setState({ pageSize: size, loading: true }, () => this.fetchDogs())}
+        onPageChange={(page) => this.setState({ page: page, loading: true }, () => this.fetchBreeders())}
+        onPageSizeChange={(size) => this.setState({ pageSize: size, loading: true }, () => this.fetchBreeders())}
         rowCount={this.state.rowCount}
         pageSize={this.state.pageSize}
         page={this.state.page}
-        onSortModelChange={(model) => this.setState({ sortKeys: model, loading: true }, () => this.fetchDogs())}
-        onFilterModelChange={(model) => this.setState({ filter: model, loading: true }, () => this.fetchDogs())}
+        onSortModelChange={(model) => this.setState({ sortKeys: model, loading: true }, () => this.fetchBreeders())}
+        onFilterModelChange={(model) => this.setState({ filter: model, loading: true }, () => this.fetchBreeders())}
         components={{ Toolbar: this.renderToolbar }}
       />
       { this.state.dialog }
@@ -129,4 +105,4 @@ class Dogs extends React.Component {
   }
 }
 
-export default withStyles(styles)(Dogs);
+export default withStyles(styles)(Breeders);

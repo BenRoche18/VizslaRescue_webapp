@@ -1,5 +1,7 @@
 package org.vizslarescue.Utils;
 
+import org.springframework.data.domain.Sort.Direction;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -7,16 +9,13 @@ import lombok.Data;
 @AllArgsConstructor
 public class SortKey {
     private String field;
-    private String direction;
+    private Direction direction;
 
     // of form field;direction
     public static SortKey fromString(String string) {
         String[] parts = string.split(";");
+        Direction direction = (parts.length == 1 || parts[1].equals("asc")) ? Direction.ASC : Direction.DESC;
 
-        if(parts.length == 1) {
-            return new SortKey(parts[0], "asc");
-        } else {
-            return new SortKey(parts[0], parts[1]);
-        }
+        return new SortKey(parts[0], direction);
     }
 }

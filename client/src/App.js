@@ -2,10 +2,11 @@ import { AppBar, CssBaseline, Divider, Drawer, List, ListItem, ListItemIcon, Lis
 import React from 'react';
 import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDog } from '@fortawesome/free-solid-svg-icons';
+import { faDog, faUsers } from '@fortawesome/free-solid-svg-icons';
 
 import Dogs from './views/Dogs';
 import Home from './views/Home';
+import Breeders from './views/Breeders';
 
 const drawerWidth = 240;
 
@@ -69,6 +70,7 @@ class App extends React.Component {
           <div className={classes.drawerContainer}>
             <List>
               {this.renderNavLink(faDog, "/dogs", "Dogs")}
+              {this.renderNavLink(faUsers, "/breeders", "Breeders")}
             </List>
             <Divider />
           </div>
@@ -76,6 +78,7 @@ class App extends React.Component {
         <main className={classes.content}>
           <Toolbar />
           <Switch>
+            <Route path="/breeders" component={Breeders} />
             <Route path="/dogs" component={Dogs} />
             <Route path="/" component={Home} />
           </Switch>

@@ -1,4 +1,4 @@
-package org.vizslarescue.service.ping;
+package org.vizslarescue.model.ping;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

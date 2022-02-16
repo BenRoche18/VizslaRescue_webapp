@@ -1,23 +1,24 @@
-package org.vizslarescue.model.litter;
+// package org.vizslarescue.model.litter;
 
-import java.util.Date;
+// import java.util.Date;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+// import javax.persistence.Entity;
 
-import lombok.Data;
+// import org.springframework.data.annotation.Id;
 
-@Data
-@Document(collection = "Litters")
-public class Litter {
-    @Id
-    private String id;
+// import lombok.Data;
 
-    private String brs;
-    private String breeders;
-    private Date date_of_litter;
-    private boolean was_cesarean;
+// @Data
+// @Entity
+// public class Litter {
+//     @Id
+//     private String id;
 
-    private Dam dam;
-    private Sire sire;
-}
+//     private String brs;
+//     private String breeders;
+//     private Date date_of_litter;
+//     private boolean was_cesarean;
+
+//     private Dam dam;
+//     private Sire sire;
+// }

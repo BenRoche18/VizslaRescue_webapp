@@ -1,10 +1,15 @@
 package org.vizslarescue.model.ping;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class Ping {
-    String status;
+    private final String status;
+
+    public static Ping create(String status)
+    {
+        return new Ping(status);
+    }
 }

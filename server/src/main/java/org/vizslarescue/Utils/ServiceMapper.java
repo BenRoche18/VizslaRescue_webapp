@@ -5,15 +5,30 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.Mapper;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import org.vizslarescue.model.breeder.Breeder;
+import org.vizslarescue.model.breeder.BreederReq;
 import org.vizslarescue.model.dog.Dog;
 import org.vizslarescue.model.dog.DogReq;
+import org.vizslarescue.model.elbow_score.ElbowScoreRecord;
+import org.vizslarescue.model.hip_score.HipScoreRecord;
+import org.vizslarescue.model.litter.Litter;
+import org.vizslarescue.model.litter.LitterReq;
 
 @Mapper(componentModel = "spring")
 public abstract class ServiceMapper{
 
   public abstract Dog mapDogReq(DogReq req);
+
+  public abstract Breeder mapBreederReq(BreederReq req);
+
+  public abstract Litter mapLitterReq(LitterReq req);
+
+  public abstract HipScoreRecord mapHipScoreRecord(HipScoreRecord req);
+
+  public abstract ElbowScoreRecord mapElbowScoreRecord(ElbowScoreRecord req);
 
   public List<Order> mapSortKeys(List<String> sortKeys)
   {
@@ -32,5 +47,46 @@ public abstract class ServiceMapper{
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The provided sort direction (" + parts[1] + ") must be one of [asc, desc]");
       }
     }).collect(Collectors.toList());
+  }
+
+  public <T> Specification<T> mapFilterKeys(List<String> filterKeys)
+  {
+    GenericSpecificationsBuilder<T> builder = new GenericSpecificationsBuilder<T>();
+
+    for(String filter : filterKeys)
+    {
+      String[] parts = filter.split(" ");
+      builder.with(parts[0], mapSearchOperation(parts[1]), parts[2]);
+    }
+
+    return builder.build();
+  }
+
+  public SearchOperation mapSearchOperation(String operation)
+  {
+    switch(operation) {
+      case "equals":
+        return SearchOperation.EQUALS;
+      case "contains":
+        return SearchOperation.CONTAINS;
+      case "startsWith":
+        return SearchOperation.STARTS_WITH;
+      case "endsWith":
+        return SearchOperation.ENDS_WITH;
+      case "=":
+        return SearchOperation.EQ;
+      case "!=":
+        return SearchOperation.NE;
+      case ">":
+        return SearchOperation.GT;
+      case "<":
+        return SearchOperation.LT;
+      case ">=":
+        return SearchOperation.GTE;
+      case "<=":
+        return SearchOperation.LTE;
+      default:
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unrecognised filter operator (" + operation + ")");
+    }
   }
 }

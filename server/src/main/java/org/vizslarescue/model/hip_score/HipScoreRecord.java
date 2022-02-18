@@ -1,4 +1,4 @@
-package org.vizslarescue.model.litter;
+package org.vizslarescue.model.hip_score;
 
 import java.util.Date;
 
@@ -6,17 +6,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.Pattern;
-
-import org.vizslarescue.model.breeder.Breeder;
-import org.vizslarescue.model.dog.Dog;
+import javax.validation.constraints.PositiveOrZero;
 
 import lombok.Data;
 
 @Data
 @Entity
-public class Litter {
+public class HipScoreRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
@@ -24,14 +21,8 @@ public class Litter {
     @Pattern(regexp = "[A-Z][A-Z][0-9]")
     private String brs;
     private Date date;
-    private boolean wasCesarean;
-
-    @ManyToOne
-    private Breeder breeder;
-
-    @ManyToOne
-    private Dog sire;
-
-    @ManyToOne
-    private Dog dam;
+    @PositiveOrZero
+    private int left;
+    @PositiveOrZero
+    private int right;
 }

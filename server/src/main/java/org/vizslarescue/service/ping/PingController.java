@@ -12,6 +12,6 @@ public class PingController {
 
     @GetMapping("/ping")
     public @ResponseBody Ping ping() {
-        return new Ping("OKAY");
+        return Ping.create("OKAY");
     }
 }

@@ -26,6 +26,12 @@ class Dogs extends React.Component {
   }
 
   columns = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 100,
+      type: 'number'
+    },
     { 
       field: "name", 
       headerName: "Name", 
@@ -65,10 +71,10 @@ class Dogs extends React.Component {
   async fetchDogs() {
     const params = {
       page: this.state.page,
-      pageSize: this.state.pageSize,
+      size: this.state.pageSize,
       sortKeys: this.state.sortKeys.map((key) => key.field + ";" + key.sort).join(","),
       filters: this.state.filter.items.filter((item) => item.value != null)
-        .map((filter) => filter.columnField + " " + filter.operatorValue + " '" + filter.value + "'")
+        .map((filter) => filter.columnField + " " + filter.operatorValue + " " + filter.value)
         .join(",")
     }
 

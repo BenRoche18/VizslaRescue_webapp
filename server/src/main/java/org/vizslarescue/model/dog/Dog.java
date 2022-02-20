@@ -1,5 +1,7 @@
 package org.vizslarescue.model.dog;
 
+import java.util.Arrays;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +12,10 @@ import javax.validation.constraints.NotNull;
 
 import org.vizslarescue.Utils.GenericEntity;
 import org.vizslarescue.model.litter.Litter;
+import org.vizslarescue.model.metadata.EntityDescription;
+import org.vizslarescue.model.metadata.FieldDescription;
+import org.vizslarescue.model.metadata.FieldType;
+import org.vizslarescue.model.metadata.TextFieldDescription;
 
 import lombok.Data;
 
@@ -28,4 +34,21 @@ public class Dog extends GenericEntity {
 
     @OneToOne
     private Litter litter;
+
+    public static EntityDescription getDescription() {
+        EntityDescription description = new EntityDescription();
+
+        description.setBusinessName("Dogs");
+        description.setTechnicalName("dogs");
+        description.setIcon("dog");
+        description.setFields(Arrays.asList(
+            new FieldDescription("ID", "id", FieldType.ID),
+            new TextFieldDescription("Name", "name", false),
+            new TextFieldDescription("Gender", "gender", false).acceptedValues(Gender.values()),
+            new TextFieldDescription("Additional Details", "additionalDetails", true),
+            new FieldDescription("Litter", "litter", FieldType.ENTITY)
+        ));
+
+        return description;
+    }
 }

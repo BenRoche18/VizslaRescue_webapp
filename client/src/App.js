@@ -1,15 +1,16 @@
-import { AppBar, CssBaseline, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, withStyles } from '@material-ui/core';
 import React from 'react';
+import axios from 'axios';
+import { AppBar, CssBaseline, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, withStyles } from '@material-ui/core';
 import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDog, faUsers, faPaw, faBookMedical } from '@fortawesome/free-solid-svg-icons';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
 
-import Dogs from './views/Dogs';
 import Home from './views/Home';
-import Breeders from './views/Breeders';
-import Litters from './views/Litters';
-import HipScores from './views/HipScores';
-import ElbowScores from './views/ElbowScores';
+import RecordView from './components/RecordView';
+import ListView from './components/ListView';
+
+library.add(fas);
 
 const drawerWidth = 240;
 
@@ -38,15 +39,42 @@ const styles = (theme) => ({
 
 class App extends React.Component {
 
-  renderNavLink(icon, to, text) {
-    return <Link to={to} style={{ color: "inherit", textDecoration: "none" }}>
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      metadata: []
+    }
+
+    axios.get("/api/metadata")
+    .then(res => {
+      this.setState({ metadata: res.data })
+    })
+  }
+
+  renderNavLink(entityMetadata) {
+    return <Link to={entityMetadata.technicalName} style={{ color: "inherit", textDecoration: "none" }}>
       <ListItem button>
         <ListItemIcon>
-          <FontAwesomeIcon size="2x" icon={icon} />
+          <FontAwesomeIcon size="2x" icon={entityMetadata.icon ?? "question"} />
         </ListItemIcon>
-        <ListItemText primary={text} />
+        <ListItemText primary={entityMetadata.businessName} />
       </ListItem>
     </Link>
+  }
+
+  route(props) {
+    const entityMetadata = this.state.metadata.find((it) => it.technicalName == props.match.params.entity);
+
+    if(entityMetadata) {
+      if(props.match.params.id || new URLSearchParams(props.location.search).has("create")) {
+        return <RecordView metadata={entityMetadata} />
+      } else {
+        return <ListView metadata={entityMetadata} />
+      }
+    } else {
+      return <Home />
+    }
   }
 
   render() {
@@ -72,11 +100,7 @@ class App extends React.Component {
           <Toolbar />
           <div className={classes.drawerContainer}>
             <List>
-              {this.renderNavLink(faDog, "/dogs", "Dogs")}
-              {this.renderNavLink(faUsers, "/breeders", "Breeders")}
-              {this.renderNavLink(faPaw, "/litters", "Litters")}
-              {this.renderNavLink(faBookMedical, "/hip_scores", "Hip Scores")}
-              {this.renderNavLink(faBookMedical, "/elbow_scores", "Elbow Scores")}
+              { this.state.metadata.map(entityMetadata => this.renderNavLink(entityMetadata)) }
             </List>
             <Divider />
           </div>
@@ -84,11 +108,8 @@ class App extends React.Component {
         <main className={classes.content}>
           <Toolbar />
           <Switch>
-            <Route path="/elbow_scores" component={ElbowScores} />
-            <Route path="/hip_scores" component={HipScores} />
-            <Route path="/litters" component={Litters} />
-            <Route path="/breeders" component={Breeders} />
-            <Route path="/dogs" component={Dogs} />
+            <Route path="/:entity/:id" render={(props) => this.route(props)} />
+            <Route path="/:entity" render={(props) => this.route(props)} />
             <Route path="/" component={Home} />
           </Switch>
         </main>

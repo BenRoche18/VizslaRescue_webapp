@@ -1,11 +1,11 @@
 import { faEdit, faSave, faTrash, faUndo, faWindowClose } from "@fortawesome/free-solid-svg-icons";
 import { AppBar, Button, Dialog, DialogTitle, DialogActions, DialogContent, IconButton, Slide, Toolbar, Typography, withStyles, TextField, Paper, Divider, Grid, CircularProgress, DialogContentText, MenuItem } from "@material-ui/core";
-import DateAdapter from '@mui/lab/AdapterDateFns';
-import { DesktopDatePicker, LocalizationProvider } from "@mui/lab"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { withRouter } from 'react-router-dom'
 import React from "react";
 import axios from 'axios';
 import flatten, { unflatten } from 'flat';
+import Field from './Field';
 
 const styles = (theme) => ({
   appBar: {
@@ -39,17 +39,28 @@ class RecordView extends React.Component {
     super(props);
 
     this.state = {
-      record: props.record,
-      error: null,
-      canEdit: !props.record.id,
+      record: undefined,
+      error: undefined,
       loading: false,
       pendingDelete: false,
-      dialogInput: null
+      dialogInput: undefined
     };
   }
 
+  get id() {
+    return this.props.match.params.id;
+  }
+
+  get createMode() {
+    return new URLSearchParams(this.props.location.search).has("create");
+  }
+
+  get editMode() {
+    return new URLSearchParams(this.props.location.search).has("edit");
+  }
+
   async componentDidMount() {
-    if(this.state.record.id)
+    if(!this.createMode)
     {
       this.fetch();
     }
@@ -58,7 +69,7 @@ class RecordView extends React.Component {
   async fetch() {
     this.setState({ loading: true });
 
-    axios.get(this.props.api + "/" + this.state.record.id)
+    axios.get("/api/" + this.props.metadata.technicalName + "/" + this.id)
     .then(res => {
       this.setState({ 
       record: flatten(res.data),
@@ -76,8 +87,8 @@ class RecordView extends React.Component {
   async delete() {
     this.setState({ loading: true });
 
-    axios.delete(this.props.api + "/" + this.state.record.id)
-    .then(this.props.onClose)
+    axios.delete("/api/" + this.props.metadata.technicalName + "/" +  this.id)
+    .then(this.onClose)
     .catch(err => {
       this.setState({
         loading: false,
@@ -89,12 +100,15 @@ class RecordView extends React.Component {
   async create() {
     this.setState({ loading: true });
 
-    axios.post(this.props.api, unflatten(this.state.record, { overwrite: true }))
+    axios.post("/api/" + this.props.metadata.technicalName, unflatten(this.state.record, { overwrite: true }))
     .then(res => {
-        this.setState({ 
+      this.setState({
         record: flatten(res.data),
         loading: false 
-        })
+      }, this.props.histoy.push({
+        search: "",
+        location: res.data.id
+      }))
     })
     .catch(err => {
         this.setState({
@@ -107,12 +121,12 @@ class RecordView extends React.Component {
   async edit() {
     this.setState({ loading: true });
 
-    axios.put(this.props.api + "/" + this.state.record.id, unflatten(this.state.record, { overwrite: true }))
+    axios.put("/api/" + this.props.metadata.technicalName + "/" +  this.id, unflatten(this.state.record, { overwrite: true }))
     .then(res => {
         this.setState({ 
         record: flatten(res.data),
         loading: false 
-        })
+        }, () => this.props.histoy.push({ search: "" }))
     })
     .catch(err => {
         this.setState({
@@ -129,6 +143,18 @@ class RecordView extends React.Component {
     return this.setState({ record: record });
   }
 
+  onClose() {
+    if(this.createMode) {
+      // remove ?create
+      this.props.history.push({ search: "" })
+    }
+    if(!!this.id) {
+      // strip /id from path
+      const path = this.props.location.pathname;
+      this.props.history.push(path.substring(0, path.lastIndexOf('/')));
+    }
+  }
+
   renderDeleteConfirmationDialog() {
     const onClose = () => {
       this.setState({ pendingDelete: false, dialogInput: null })
@@ -143,7 +169,7 @@ class RecordView extends React.Component {
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Type '{ this.state.record.id }' to confirm permanent deletion.
+          Type '{  this.state.id }' to confirm permanent deletion.
         </DialogContentText>
         <TextField
           value={this.state.dialogInput}
@@ -154,7 +180,7 @@ class RecordView extends React.Component {
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={this.delete.bind(this)} color="secondary" disabled={this.state.dialogInput != this.state.record.id}>
+        <Button onClick={this.delete.bind(this)} color="secondary" disabled={this.state.dialogInput != this.id}>
           Delete
         </Button>
       </DialogActions>
@@ -171,25 +197,26 @@ class RecordView extends React.Component {
     </Button>
   }
 
-  renderSaveButton(createMode = false) {
+  renderSaveButton() {
     return <Button 
       color="inherit"
-      onClick={() => {
-        this.setState({ canEdit: false })
-        createMode ? this.create() : this.edit()
-      }}
+      onClick={() => this.createMode ? this.create() : this.edit()}
       startIcon={<FontAwesomeIcon icon={faSave} size="md" />}
     >
       Save
     </Button>
   }
 
-  renderCancelButton(createMode = false) {
+  renderCancelButton() {
     return  <Button 
       color="inherit" 
       onClick={() => {
-        this.setState({ canEdit: false })
-        createMode ? this.props.onClose() : this.fetch();
+        if(this.createMode) {
+          this.onClose()
+        } else {
+          this.props.history.push({ search: "" });
+          this.fetch();
+        }
       }}
       startIcon={<FontAwesomeIcon icon={faUndo} size="md" />}
     >
@@ -200,7 +227,7 @@ class RecordView extends React.Component {
   renderEditButton() {
     return  <Button 
       color="inherit" 
-      onClick={() => this.setState({ canEdit: true })}
+      onClick={() =>  this.props.history.push({ search: "?edit" })}
       startIcon={<FontAwesomeIcon icon={faEdit} size="md" />}
     >
       Edit
@@ -212,90 +239,30 @@ class RecordView extends React.Component {
 
     return <AppBar className={classes.appBar}>
       <Toolbar>
-        <IconButton edge="start" color="inherit" onClick={this.props.onClose}>
+        <IconButton edge="start" color="inherit" onClick={this.onClose.bind(this)}>
           <FontAwesomeIcon icon={faWindowClose} />
         </IconButton>
         <Typography variant="h6" className={classes.title}>
-          {this.state.record.id ?? "New*"}
+          {this.id ?? "New*"}
         </Typography>
-        {this.state.canEdit && this.state.record.id && this.renderDeleteButton()}
-        {this.state.canEdit && this.renderSaveButton(!this.state.record.id)}
-        {this.state.canEdit && this.renderCancelButton(!this.state.record.id)}
-        {!this.state.canEdit && this.renderEditButton()}
+        {this.editMode && this.renderDeleteButton()}
+        {(this.editMode || this.createMode) && this.renderSaveButton(!this.state.id)}
+        {(this.editMode || this.createMode) && this.renderCancelButton(!this.state.id)}
+        {!this.editMode && !this.createMode && this.renderEditButton()}
       </Toolbar>
     </AppBar>
   }
 
   renderProperties() {
-    let sections = {};
-
-    this.props.columns.forEach((column) => {
-      if(!!column.section)
-      {
-        if(sections[column.section] == undefined)
-        {
-          sections[column.section] = [];
-        }
-        sections[column.section].push(column)
-      }
-    })
-
-    return <div>
-      {Object.keys(sections).map((key) => this.renderSection(key, sections[key]))}
-    </div>
-  }
-
-  renderSection(label, fields) {
     const { classes } = this.props;
 
     return <div>
       <Typography variant="overline">
-        {label}
+        GeneralInformation
       </Typography>
       <Divider className={classes.formDivider} />
-      <Grid container spacing={2} className={classes.formSection}>
-        { fields.map((field) => this.renderField(field)) }
-      </Grid>
+      { this.props.metadata.fields.map((fieldMetadata) => <Field metadata={fieldMetadata} />) }
     </div>
-  }
-
-  renderField(field) {
-    console.log(field)
-
-    const component = field.type != "date"
-      ? <TextField
-        label={field.headerName}
-        select={field.options}
-        value={this.state.record[field.field]}
-        variant="outlined"
-        onChange={(event) => this.updateRecord(field.field, event.target.value)}
-        InputProps={{
-          readOnly: !this.state.canEdit || field.readOnly
-        }}
-        type={field.type}
-        multiline={field.multiline}
-      >
-        { field.options && field.options.map((option) => <MenuItem key={option} value={option}>
-          {option}
-        </MenuItem>) }
-      </TextField>
-      : <LocalizationProvider dateAdapter={DateAdapter}>
-        <DesktopDatePicker
-          label={field.headerName}
-          inputFormat="MM/dd/yyyy"
-          value={this.state.record[field.field]}
-          onChange={(value) => this.updateRecord(field.field, value)}
-          readOnly={!this.state.canEdit || field.readOnly}
-          renderInput={(params) => <TextField 
-            {...params} 
-            variant="outlined"
-          />}
-        />
-      </LocalizationProvider>
-
-    return <Grid item xs={12}>
-      { component }
-    </Grid>
   }
 
   renderBody() {
@@ -325,7 +292,7 @@ class RecordView extends React.Component {
     return <Dialog
       fullScreen
       open
-      onClose={this.props.onClose}
+      onClose={this.onClose.bind(this)}
       TransitionComponent={Transition}
     >
       {this.renderToolbar()}
@@ -336,4 +303,4 @@ class RecordView extends React.Component {
   }
 }
 
-export default withStyles(styles)(RecordView);
+export default withRouter(withStyles(styles)(RecordView));

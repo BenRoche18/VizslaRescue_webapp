@@ -1,5 +1,6 @@
 package org.vizslarescue.model.hip_score;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -13,6 +14,10 @@ import javax.validation.constraints.PositiveOrZero;
 
 import org.vizslarescue.Utils.GenericEntity;
 import org.vizslarescue.model.dog.Dog;
+import org.vizslarescue.model.metadata.EntityDescription;
+import org.vizslarescue.model.metadata.FieldDescription;
+import org.vizslarescue.model.metadata.FieldType;
+import org.vizslarescue.model.metadata.TextFieldDescription;
 
 import lombok.Data;
 
@@ -35,4 +40,23 @@ public class HipScoreRecord extends GenericEntity {
     @NotNull
     @ManyToOne
     private Dog dog;
+
+    public static EntityDescription getDescription() {
+        EntityDescription description = new EntityDescription();
+
+        description.setBusinessName("Hip Scores");
+        description.setTechnicalName("hip_scores");
+        description.setIcon("book-medical");
+        description.setFields(Arrays.asList(
+            new FieldDescription("ID", "id", FieldType.ID),
+            new TextFieldDescription("BRS", "brs", false).regex("[A-Z][A-Z][0-9]"),
+            new FieldDescription("Date", "date", FieldType.DATE),
+            new FieldDescription("Left Score", "left", FieldType.NUMBER),   
+            new FieldDescription("Right Score", "right", FieldType.NUMBER),            
+            new TextFieldDescription("Additional Details", "additionalDetails", true),
+            new FieldDescription("Dog", "dog", FieldType.ENTITY)
+        ));
+
+        return description;
+    }
 }

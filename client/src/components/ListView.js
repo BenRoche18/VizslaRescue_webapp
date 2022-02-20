@@ -5,6 +5,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit } from "@fortawesome/free-solid-svg-icons";
 import flatten from 'flat';
+import { withRouter } from 'react-router-dom'
 
 const styles = (theme) => ({
   gridContainer: {
@@ -44,7 +45,7 @@ class ListView extends React.Component {
         .join(",")
     }
 
-    axios.get(this.props.api, { params })
+    axios.get("/api/" + this.props.metadata.technicalName, { params })
       .then(res => {
         this.setState({ 
           records: res.data.content.map((record) => flatten(record)),
@@ -67,7 +68,9 @@ class ListView extends React.Component {
             color="primary" 
             startIcon={<FontAwesomeIcon icon={faEdit} size="md" />}
             size="small"
-            onClick={this.props.onCreate}
+            onClick={() => this.props.history.push({ 
+              search: "?create"
+            })}
           >
             Create
           </Button>
@@ -85,9 +88,17 @@ class ListView extends React.Component {
   render() {
     const { classes } = this.props;
 
+    const columns = this.props.metadata.fields.map((fieldMetadata) => {
+      return {
+        field: fieldMetadata.technicalName,
+        headerName: fieldMetadata.businessName,
+        type: fieldMetadata.type
+      }
+    })
+
     return <div className={classes.gridContainer}>
       <DataGrid
-        columns={this.props.columns}
+        columns={columns}
         rows={this.state.records}
         paginationMode="server"
         sortingMode="server"
@@ -108,4 +119,4 @@ class ListView extends React.Component {
   }
 }
 
-export default withStyles(styles)(ListView);
+export default withRouter(withStyles(styles)(ListView));

@@ -1,18 +1,18 @@
-package org.vizslarescue.service.dogs;
+package org.vizslarescue.service.elbow_score;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.vizslarescue.Utils.GenericController;
 import org.vizslarescue.Utils.ServiceMapperImpl;
-import org.vizslarescue.model.dog.Dog;
+import org.vizslarescue.model.elbow_score.ElbowScoreRecord;
 
+@RequestMapping(path = "/api/elbow_scores")
 @RestController
-@RequestMapping(path = "/api/dogs")
-public class DogsController extends GenericController<Dog> {
+public class ElbowScoreController extends GenericController<ElbowScoreRecord> {
 
     @Autowired
-    public DogsController(DogRepository repository, ServiceMapperImpl mapper)
+    public ElbowScoreController(ElbowScoreRepository repository, ServiceMapperImpl mapper)
     {
         super(repository, mapper);
     }

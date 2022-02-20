@@ -1,28 +1,11 @@
-import { Box, Button, withStyles } from "@material-ui/core";
-import { DataGrid, GridToolbarContainer, GridToolbarExport, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector } from "@material-ui/data-grid"
+import { Button } from "@material-ui/core";
 import React from "react";
-import axios from 'axios';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
-import Dog from "../components/Dog";
-
-const styles = (theme) => ({
-  gridContainer: {
-    width: "100%",
-  },
-});
+import ListView from "../components/ListView";
+import RecordView from "../components/RecordView";
 
 class Dogs extends React.Component {
   state = {
-    rowCount: 0,
-    pageSize: 25,
-    page: 0,
-    loading: true,
-    dogs: [],
-    sortKeys: [],
-    filter: {
-      items: []
-    }
+    record: null
   }
 
   columns = [
@@ -30,109 +13,103 @@ class Dogs extends React.Component {
       field: "id",
       headerName: "ID",
       width: 100,
-      type: 'number'
+      type: 'number',
+      renderCell: (cell) => <Button onClick={() => this.setState({ record: { id: cell.row.id } })}>
+        {cell.row.id}
+      </Button>
     },
     { 
       field: "name", 
       headerName: "Name", 
-      width: 250, 
-      renderCell: (cell) => <Dog name={cell.row.name} id={cell.row.id}/>
+      width: 500,
+      section: "General Information"
     },
     { 
       field: "gender",
       headerName: "Gender",
-      width: 150
+      width: 150,
+      section: "General Information",
+      options: [
+        "BITCH",
+        "DOG"
+      ]
     },
     { 
-      field: "additional_details",
-      headerName: "Additional Details",
-      width: 200
+      field: "additionalDetails", 
+      headerName: "Additional Details", 
+      width: 500,
+      hide: true,
+      multiline: true,
+      section: "General Information"
     },
     {
-      field: "hip_score.total",
-      headerName: "Hip Score", 
+      field: "litter.id", 
+      headerName: "ID", 
       width: 250,
-      type: 'number',
-      renderCell: (cell) => !cell.row.hip_score ? "-" : (cell.row.hip_score.left + " : " + cell.row.hip_score.right)
+      hide: true,
+      type: "number",
+      section: "Litter"
     },
-    { 
-      field: "elbow_score",
-      headerName: "Elbow Score", 
+    {
+      field: "litter.date", 
+      headerName: "Date of Birth", 
       width: 250,
-      type: 'number',
-      renderCell: (cell) => cell.row.elbow_score ?? "-"
+      hide: true,
+      readOnly: true,
+      type: "date",
+      section: "Litter"
+    },
+    {
+      field: "wasCesarean",
+      headerName: "Was Cesarean",
+      width: 150,
+      type: "boolean",
+      hide: true,
+      readOnly: true,
+      section: "Litter"
+    },
+    {
+      field: "litter.breeder.id", 
+      headerName: "ID", 
+      width: 250,
+      hide: true,
+      readOnly: true,
+      type: "number",
+      section: "Breeder"
+    },
+    {
+      field: "litter.breeder.names", 
+      headerName: "Names", 
+      width: 250,
+      hide: true,
+      readOnly: true,
+      section: "Breeder"
     }
   ]
 
-  componentDidMount() {
-    this.fetchDogs();
-  }
-
-  async fetchDogs() {
-    const params = {
-      page: this.state.page,
-      size: this.state.pageSize,
-      sortKeys: this.state.sortKeys.map((key) => key.field + ";" + key.sort).join(","),
-      filters: this.state.filter.items.filter((item) => item.value != null)
-        .map((filter) => filter.columnField + " " + filter.operatorValue + " " + filter.value)
-        .join(",")
-    }
-
-    axios.get("/api/dogs", { params })
-      .then(res => {
-        this.setState({ 
-          dogs: res.data.content,
-          rowCount: res.data.totalElements,
-          loading: false })
-      })
-  }
-
-  renderToolbar() {
-    return <GridToolbarContainer>
-      <Box display="flex" style={{ width: "100%" }}>
-        <Box>
-          <Button 
-            color="primary" 
-            startIcon={<FontAwesomeIcon icon={faEdit} size="md" />}
-            size="small"
-          >
-            Create
-          </Button>
-        </Box>
-        <Box style={{ marginLeft: "auto" }}>
-          <GridToolbarColumnsButton />
-          <GridToolbarFilterButton />
-          <GridToolbarDensitySelector />
-          <GridToolbarExport csvOptions={{ allColumns: true, fileName: "export" }}/>
-        </Box>
-      </Box>
-    </GridToolbarContainer>
-  }
-
   render() {
-    const { classes } = this.props;
-
-    return <div className={classes.gridContainer}>
-      <DataGrid
+    if(this.state.record)
+    {
+      return <RecordView
+        api="/api/dogs"
         columns={this.columns}
-        rows={this.state.dogs}
-        paginationMode="server"
-        sortingMode="server"
-        filterMode="server"
-        autoHeight
-        loading={this.state.loading}
-        onPageChange={(page) => this.setState({ page: page, loading: true }, () => this.fetchDogs())}
-        onPageSizeChange={(size) => this.setState({ pageSize: size, loading: true }, () => this.fetchDogs())}
-        rowCount={this.state.rowCount}
-        pageSize={this.state.pageSize}
-        page={this.state.page}
-        onSortModelChange={(model) => this.setState({ sortKeys: model, loading: true }, () => this.fetchDogs())}
-        onFilterModelChange={(model) => this.setState({ filter: model, loading: true }, () => this.fetchDogs())}
-        components={{ Toolbar: this.renderToolbar }}
+        record={this.state.record}
+        onClose={() => this.setState({
+          record: null
+        })}
       />
-      { this.state.dialog }
-    </div>;
+    }
+    else
+    {
+      return <ListView
+        api="/api/dogs"
+        columns={this.columns}
+        onCreate={() => this.setState({
+          record: {}
+        })}
+      />
+    }
   }
 }
 
-export default withStyles(styles)(Dogs);
+export default Dogs;

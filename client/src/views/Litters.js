@@ -3,7 +3,7 @@ import React from "react";
 import ListView from "../components/ListView";
 import RecordView from "../components/RecordView";
 
-class Breeders extends React.Component {
+class Litters extends React.Component {
   state = {
     record: null
   }
@@ -12,16 +12,31 @@ class Breeders extends React.Component {
     {
       field: "id",
       headerName: "ID",
-      width: 100,
+      width: 150,
       type: 'number',
       renderCell: (cell) => <Button onClick={() => this.setState({ record: { id: cell.row.id } })}>
         {cell.row.id}
       </Button>
     },
     { 
-      field: "names", 
-      headerName: "Names", 
-      width: 500,
+      field: "brs", 
+      headerName: "BRS", 
+      width: 150,
+      section: "General Information"
+    },
+    { 
+      field: "date",
+      headerName: "Date",
+      width: 200,
+      type: "date",
+      section: "General Information"
+    },
+    { 
+      field: "wasCesarean",
+      headerName: "Was Cesarean",
+      width: 150,
+      type: "boolean",
+      hide: true,
       section: "General Information"
     },
     { 
@@ -31,6 +46,22 @@ class Breeders extends React.Component {
       hide: true,
       multiline: true,
       section: "General Information"
+    },
+    {
+      field: "breeder.id", 
+      headerName: "ID", 
+      width: 250,
+      hide: true,
+      type: "number",
+      section: "Breeders"
+    },
+    {
+      field: "breeder.names", 
+      headerName: "Names", 
+      width: 250,
+      hide: true,
+      readOnly: true,
+      section: "Breeders"
     }
   ]
 
@@ -38,7 +69,7 @@ class Breeders extends React.Component {
     if(this.state.record)
     {
       return <RecordView
-        api="/api/breeders"
+        api="/api/litters"
         columns={this.columns}
         record={this.state.record}
         onClose={() => this.setState({
@@ -49,7 +80,7 @@ class Breeders extends React.Component {
     else
     {
       return <ListView
-        api="/api/breeders"
+        api="/api/litters"
         columns={this.columns}
         onCreate={() => this.setState({
           record: {}
@@ -59,4 +90,4 @@ class Breeders extends React.Component {
   }
 }
 
-export default Breeders;
+export default Litters;

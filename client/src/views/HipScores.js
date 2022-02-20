@@ -3,7 +3,7 @@ import React from "react";
 import ListView from "../components/ListView";
 import RecordView from "../components/RecordView";
 
-class Breeders extends React.Component {
+class HipScores extends React.Component {
   state = {
     record: null
   }
@@ -19,9 +19,16 @@ class Breeders extends React.Component {
       </Button>
     },
     { 
-      field: "names", 
-      headerName: "Names", 
+      field: "brs", 
+      headerName: "BRS", 
       width: 500,
+      section: "General Information"
+    },
+    { 
+      field: "date",
+      headerName: "Date",
+      width: 200,
+      type: "date",
       section: "General Information"
     },
     { 
@@ -29,7 +36,6 @@ class Breeders extends React.Component {
       headerName: "Additional Details", 
       width: 500,
       hide: true,
-      multiline: true,
       section: "General Information"
     }
   ]
@@ -38,7 +44,7 @@ class Breeders extends React.Component {
     if(this.state.record)
     {
       return <RecordView
-        api="/api/breeders"
+        api="/api/hip_scores"
         columns={this.columns}
         record={this.state.record}
         onClose={() => this.setState({
@@ -49,7 +55,7 @@ class Breeders extends React.Component {
     else
     {
       return <ListView
-        api="/api/breeders"
+        api="/api/hip_scores"
         columns={this.columns}
         onCreate={() => this.setState({
           record: {}
@@ -59,4 +65,4 @@ class Breeders extends React.Component {
   }
 }
 
-export default Breeders;
+export default HipScores;

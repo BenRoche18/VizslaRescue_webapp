@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Pattern;
 
+import org.vizslarescue.Utils.GenericEntity;
 import org.vizslarescue.model.breeder.Breeder;
 import org.vizslarescue.model.dog.Dog;
 
@@ -16,7 +17,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Litter {
+public class Litter extends GenericEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
@@ -25,6 +26,7 @@ public class Litter {
     private String brs;
     private Date date;
     private boolean wasCesarean;
+    private String additionalDetails;
 
     @ManyToOne
     private Breeder breeder;

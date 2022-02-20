@@ -3,7 +3,7 @@ import React from "react";
 import ListView from "../components/ListView";
 import RecordView from "../components/RecordView";
 
-class Breeders extends React.Component {
+class ElbowScores extends React.Component {
   state = {
     record: null
   }
@@ -12,16 +12,36 @@ class Breeders extends React.Component {
     {
       field: "id",
       headerName: "ID",
-      width: 100,
+      width: 200,
       type: 'number',
       renderCell: (cell) => <Button onClick={() => this.setState({ record: { id: cell.row.id } })}>
         {cell.row.id}
       </Button>
     },
     { 
-      field: "names", 
-      headerName: "Names", 
-      width: 500,
+      field: "brs", 
+      headerName: "BRS", 
+      width: 200,
+      section: "General Information"
+    },
+    { 
+      field: "date",
+      headerName: "Date",
+      width: 300,
+      type: "date",
+      section: "General Information"
+    },
+    {
+      field: "score",
+      headerName: "Score",
+      width: 200,
+      type: "number",
+      section: "General Information"
+    },
+    {
+      field: "dog",
+      headerName: "Dog",
+      hide: true,
       section: "General Information"
     },
     { 
@@ -38,7 +58,7 @@ class Breeders extends React.Component {
     if(this.state.record)
     {
       return <RecordView
-        api="/api/breeders"
+        api="/api/elbow_scores"
         columns={this.columns}
         record={this.state.record}
         onClose={() => this.setState({
@@ -49,7 +69,7 @@ class Breeders extends React.Component {
     else
     {
       return <ListView
-        api="/api/breeders"
+        api="/api/elbow_scores"
         columns={this.columns}
         onCreate={() => this.setState({
           record: {}
@@ -59,4 +79,4 @@ class Breeders extends React.Component {
   }
 }
 
-export default Breeders;
+export default ElbowScores;

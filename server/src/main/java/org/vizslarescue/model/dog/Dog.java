@@ -8,14 +8,14 @@ import javax.persistence.OneToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.vizslarescue.model.hip_score.HipScoreRecord;
+import org.vizslarescue.Utils.GenericEntity;
 import org.vizslarescue.model.litter.Litter;
 
 import lombok.Data;
 
 @Data
 @Entity
-public class Dog {
+public class Dog extends GenericEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
@@ -28,10 +28,4 @@ public class Dog {
 
     @OneToOne
     private Litter litter;
-
-    @OneToOne
-    private HipScoreRecord hipScoreRecord;
-
-    @OneToOne
-    private HipScoreRecord elbowScoreRecord;
 }

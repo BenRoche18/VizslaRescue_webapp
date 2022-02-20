@@ -8,23 +8,11 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import org.vizslarescue.model.breeder.Breeder;
-import org.vizslarescue.model.breeder.BreederReq;
-import org.vizslarescue.model.dog.Dog;
-import org.vizslarescue.model.dog.DogReq;
 import org.vizslarescue.model.elbow_score.ElbowScoreRecord;
 import org.vizslarescue.model.hip_score.HipScoreRecord;
-import org.vizslarescue.model.litter.Litter;
-import org.vizslarescue.model.litter.LitterReq;
 
 @Mapper(componentModel = "spring")
-public abstract class ServiceMapper{
-
-  public abstract Dog mapDogReq(DogReq req);
-
-  public abstract Breeder mapBreederReq(BreederReq req);
-
-  public abstract Litter mapLitterReq(LitterReq req);
+public abstract class ServiceMapper {
 
   public abstract HipScoreRecord mapHipScoreRecord(HipScoreRecord req);
 

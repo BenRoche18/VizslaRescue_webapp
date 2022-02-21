@@ -1,11 +1,11 @@
 import { faEdit, faSave, faTrash, faUndo, faWindowClose } from "@fortawesome/free-solid-svg-icons";
-import { AppBar, Button, Dialog, DialogTitle, DialogActions, DialogContent, IconButton, Slide, Toolbar, Typography, withStyles, TextField, Paper, Divider, Grid, CircularProgress, DialogContentText, MenuItem } from "@material-ui/core";
+import { AppBar, Button, Dialog, DialogTitle, DialogActions, DialogContent, IconButton, Slide, Toolbar, Typography, withStyles, TextField, Paper, Divider, Grid, CircularProgress, DialogContentText } from "@material-ui/core";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { withRouter } from 'react-router-dom'
 import React from "react";
 import axios from 'axios';
 import flatten, { unflatten } from 'flat';
-import Field from './Field';
+import Field from '../components/Field';
 
 const styles = (theme) => ({
   appBar: {
@@ -39,7 +39,7 @@ class RecordView extends React.Component {
     super(props);
 
     this.state = {
-      record: undefined,
+      record: {},
       error: undefined,
       loading: false,
       pendingDelete: false,
@@ -88,7 +88,7 @@ class RecordView extends React.Component {
     this.setState({ loading: true });
 
     axios.delete("/api/" + this.props.metadata.technicalName + "/" +  this.id)
-    .then(this.onClose)
+    .then(this.onClose.bind(this))
     .catch(err => {
       this.setState({
         loading: false,
@@ -105,9 +105,9 @@ class RecordView extends React.Component {
       this.setState({
         record: flatten(res.data),
         loading: false 
-      }, this.props.histoy.push({
+      }, this.props.history.push({
         search: "",
-        location: res.data.id
+        pathname: this.props.location.pathname + "/" + res.data.id
       }))
     })
     .catch(err => {
@@ -126,7 +126,7 @@ class RecordView extends React.Component {
         this.setState({ 
         record: flatten(res.data),
         loading: false 
-        }, () => this.props.histoy.push({ search: "" }))
+        }, () => this.props.history.push({ search: "" }))
     })
     .catch(err => {
         this.setState({
@@ -169,7 +169,7 @@ class RecordView extends React.Component {
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Type '{  this.state.id }' to confirm permanent deletion.
+          Type '{  this.id }' to confirm permanent deletion.
         </DialogContentText>
         <TextField
           value={this.state.dialogInput}
@@ -258,10 +258,19 @@ class RecordView extends React.Component {
 
     return <div>
       <Typography variant="overline">
-        GeneralInformation
+        General Information
       </Typography>
       <Divider className={classes.formDivider} />
-      { this.props.metadata.fields.map((fieldMetadata) => <Field metadata={fieldMetadata} />) }
+      <Grid container spacing={2} className={classes.formSection}>
+        { this.props.metadata.fields.map((fieldMetadata) => <Grid item xs={12}>
+          <Field 
+            metadata={fieldMetadata}
+            readOnly={!this.editMode && !this.createMode}
+            value={this.state.record[fieldMetadata.technicalName]}
+            onChange={(value) => this.updateRecord(fieldMetadata.technicalName, value)}
+          />
+        </Grid>) }
+      </Grid>
     </div>
   }
 

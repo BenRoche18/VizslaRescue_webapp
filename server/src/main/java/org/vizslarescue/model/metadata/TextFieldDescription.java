@@ -8,13 +8,13 @@ import lombok.Data;
 
 @Data
 public class TextFieldDescription extends FieldDescription {
-  private final boolean isMultiLine;
+  private final boolean multiline;
   private String regex;
   private List<String> acceptedValues;
 
-  public TextFieldDescription(String businessName, String technicalName, boolean isMultiLine) {
-    super(businessName, technicalName, FieldType.TEXT);
-    this.isMultiLine = isMultiLine;
+  public TextFieldDescription(String businessName, String technicalName, boolean multiline, Integer width) {
+    super(businessName, technicalName, FieldType.TEXT, width);
+    this.multiline = multiline;
   }
 
   public TextFieldDescription regex(String pattern)

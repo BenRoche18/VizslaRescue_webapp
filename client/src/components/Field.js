@@ -1,15 +1,66 @@
 import React from "react";
 import axios from 'axios';
-import { TextField, Autocomplete } from "@material-ui/core";
+import { TextField, Checkbox, FormControlLabel } from "@material-ui/core";
+import { Autocomplete } from '@material-ui/lab';
 import DateAdapter from '@mui/lab/AdapterDateFns';
 import { DesktopDatePicker, LocalizationProvider } from "@mui/lab"
 
 class Field extends React.Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      options: [],
+      search: undefined
+    }
+  }
+
+  async updateOptions() {
+    const params = {
+      page: 0,
+      size: 20,
+      sortKeys: "names;asc",
+      filters: "names startsWith " + this.state.search
+    }
+
+    axios.get("/api/" + this.props.metadata.technicalName + "s", { params })
+    .then(res => {
+      this.setState({ options: res.data.content })
+    })
+  }
+
+  renderEntityField() {
+    return <Autocomplete
+      options={this.state.options}
+      getOptionLabel={(options) => options[this.props.field]}
+      value={this.props.value}
+      onInputChange={(event, value) => {
+        if(value)
+        {
+          this.setState({ search: value }, this.updateOptions.bind(this))
+        }
+      }}
+      onChange={(event, value) => { 
+        if(value)
+        {
+          this.setState({ search: value }, this.props.onChange(value)) }
+        }
+      }
+      renderInput={(params) =>
+        <TextField
+          {...params}
+          label={this.props.metadata.businessName}
+          variant="outlined"
+        />
+      }
+    />
+  }
+
   renderDateField() {
     return <LocalizationProvider dateAdapter={DateAdapter}>
       <DesktopDatePicker
-        label={this.props.label}
+        label={this.props.metadata.businessName}
         value={this.props.value}
         inputFormat="MM/dd/yyyy"
         onChange={this.props.onChange}
@@ -22,8 +73,19 @@ class Field extends React.Component {
     </LocalizationProvider>
   }
 
-  renderIdField() {
-
+  renderBooleanField() {
+    return <FormControlLabel
+      label={this.props.metadata.businessName}
+      control={
+        <Checkbox 
+          value={this.props.value}
+          onChange={this.props.onChange}
+          InputProps={{
+            readOnly: this.props.readOnly
+          }}
+        />
+      }
+    />
   }
 
   renderEnumField() {
@@ -31,23 +93,30 @@ class Field extends React.Component {
   }
 
   renderTextField() {
-    return <TextField>
-      label={this.props.label}
+    return <TextField
+      label={this.props.metadata.businessName}
       value={this.props.value}
       variant="outlined"
-      onChange={this.props.onChange}
+      onChange={(event) => this.props.onChange(event.target.value)}
       InputProps={{
         readOnly: this.props.readOnly
-      }}
-    </TextField>
+      }} 
+       multiline={this.props.metadata.multiline}
+    />
   }
 
   render()  {
-    switch(this.props.type) {
+    switch(this.props.metadata.type) {
       case "date":
         return this.renderDateField();
-      default:
+      case "text":
         return this.renderTextField();
+      case "boolean":
+        return this.renderBooleanField();
+      case "entity":
+        return this.renderEntityField();
+      default:
+        return null;
     }
   }
 }

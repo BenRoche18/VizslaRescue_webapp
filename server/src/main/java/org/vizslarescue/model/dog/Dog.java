@@ -42,11 +42,11 @@ public class Dog extends GenericEntity {
         description.setTechnicalName("dogs");
         description.setIcon("dog");
         description.setFields(Arrays.asList(
-            new FieldDescription("ID", "id", FieldType.ID),
-            new TextFieldDescription("Name", "name", false),
-            new TextFieldDescription("Gender", "gender", false).acceptedValues(Gender.values()),
-            new TextFieldDescription("Additional Details", "additionalDetails", true),
-            new FieldDescription("Litter", "litter", FieldType.ENTITY)
+            new FieldDescription("ID", "id", FieldType.ID, 100),
+            new TextFieldDescription("Name", "name", false, 200),
+            new TextFieldDescription("Gender", "gender", false, 100).acceptedValues(Gender.values()),
+            new TextFieldDescription("Additional Details", "additionalDetails", true, 300),
+            new FieldDescription("Litter", "litter", FieldType.ENTITY, 100)
         ));
 
         return description;

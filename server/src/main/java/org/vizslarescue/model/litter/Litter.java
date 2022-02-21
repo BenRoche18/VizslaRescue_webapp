@@ -49,14 +49,14 @@ public class Litter extends GenericEntity {
         description.setTechnicalName("litters");
         description.setIcon("paw");
         description.setFields(Arrays.asList(
-            new FieldDescription("ID", "id", FieldType.ID),
-            new TextFieldDescription("BRS", "brs", false).regex("[A-Z][A-Z][0-9]"),
-            new FieldDescription("Date", "date", FieldType.DATE),
-            new FieldDescription("Was Cesarean", "wasCesarean", FieldType.BOOLEAN),
-            new TextFieldDescription("Additional Details", "additionalDetails", true),
-            new FieldDescription("Breeder", "breeder", FieldType.ENTITY),
-            new FieldDescription("Sire", "sire", FieldType.ENTITY),
-            new FieldDescription("Dam", "dam", FieldType.ENTITY)
+            new FieldDescription("ID", "id", FieldType.ID, 100),
+            new TextFieldDescription("BRS", "brs", false, 100).regex("[A-Z][A-Z][0-9]"),
+            new FieldDescription("Date", "date", FieldType.DATE, 150),
+            new FieldDescription("Was Cesarean", "wasCesarean", FieldType.BOOLEAN, 100),
+            new TextFieldDescription("Additional Details", "additionalDetails", true, 300),
+            new FieldDescription("Breeder", "breeder", FieldType.ENTITY, 100),
+            new FieldDescription("Sire", "sire", FieldType.ENTITY, 100),
+            new FieldDescription("Dam", "dam", FieldType.ENTITY, 100)
         ));
 
         return description;

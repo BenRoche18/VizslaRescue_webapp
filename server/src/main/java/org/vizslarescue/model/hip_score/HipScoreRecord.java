@@ -48,13 +48,13 @@ public class HipScoreRecord extends GenericEntity {
         description.setTechnicalName("hip_scores");
         description.setIcon("book-medical");
         description.setFields(Arrays.asList(
-            new FieldDescription("ID", "id", FieldType.ID),
-            new TextFieldDescription("BRS", "brs", false).regex("[A-Z][A-Z][0-9]"),
-            new FieldDescription("Date", "date", FieldType.DATE),
-            new FieldDescription("Left Score", "left", FieldType.NUMBER),   
-            new FieldDescription("Right Score", "right", FieldType.NUMBER),            
-            new TextFieldDescription("Additional Details", "additionalDetails", true),
-            new FieldDescription("Dog", "dog", FieldType.ENTITY)
+            new FieldDescription("ID", "id", FieldType.ID, 100),
+            new TextFieldDescription("BRS", "brs", false, 100).regex("[A-Z][A-Z][0-9]"),
+            new FieldDescription("Date", "date", FieldType.DATE, 150),
+            new FieldDescription("Left Score", "left", FieldType.NUMBER, 100),   
+            new FieldDescription("Right Score", "right", FieldType.NUMBER, 100),            
+            new TextFieldDescription("Additional Details", "additionalDetails", true, 300),
+            new FieldDescription("Dog", "dog", FieldType.ENTITY, 100)
         ));
 
         return description;

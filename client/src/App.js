@@ -7,8 +7,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 
 import Home from './views/Home';
-import RecordView from './components/RecordView';
-import ListView from './components/ListView';
+import RecordView from './views/RecordView';
+import ListView from './views/ListView';
 
 library.add(fas);
 
@@ -53,7 +53,7 @@ class App extends React.Component {
   }
 
   renderNavLink(entityMetadata) {
-    return <Link to={entityMetadata.technicalName} style={{ color: "inherit", textDecoration: "none" }}>
+    return <Link to={"/" + entityMetadata.technicalName} style={{ color: "inherit", textDecoration: "none" }}>
       <ListItem button>
         <ListItemIcon>
           <FontAwesomeIcon size="2x" icon={entityMetadata.icon ?? "question"} />
@@ -63,17 +63,19 @@ class App extends React.Component {
     </Link>
   }
 
-  route(props) {
-    const entityMetadata = this.state.metadata.find((it) => it.technicalName == props.match.params.entity);
+  entityRoute(props) {
+    const entityMetadata = this.state.metadata.find((it) => it.technicalName === props.match.params.entity);
 
     if(entityMetadata) {
       if(props.match.params.id || new URLSearchParams(props.location.search).has("create")) {
-        return <RecordView metadata={entityMetadata} />
+        return <RecordView metadata={entityMetadata} key={entityMetadata.technicalName} />
       } else {
-        return <ListView metadata={entityMetadata} />
+        return <ListView metadata={entityMetadata} key={entityMetadata.technicalName} />
       }
     } else {
-      return <Home />
+      return <Typography>
+        Requested Entity ({props.match.params.entity}) Not Found
+      </Typography>
     }
   }
 
@@ -108,8 +110,8 @@ class App extends React.Component {
         <main className={classes.content}>
           <Toolbar />
           <Switch>
-            <Route path="/:entity/:id" render={(props) => this.route(props)} />
-            <Route path="/:entity" render={(props) => this.route(props)} />
+            <Route path="/:entity/:id" render={(props) => this.entityRoute(props)} />
+            <Route path="/:entity" render={(props) => this.entityRoute(props)} />
             <Route path="/" component={Home} />
           </Switch>
         </main>

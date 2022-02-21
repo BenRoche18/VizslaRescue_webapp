@@ -3,7 +3,7 @@ import { DataGrid, GridToolbarContainer, GridToolbarExport, GridToolbarColumnsBu
 import React from "react";
 import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faEye } from "@fortawesome/free-solid-svg-icons";
 import flatten from 'flat';
 import { withRouter } from 'react-router-dom'
 
@@ -27,7 +27,8 @@ class ListView extends React.Component {
       filter: {
         items: []
       },
-      records: []
+      records: [],
+      selectedRecordId: undefined
     };
   }
 
@@ -74,6 +75,16 @@ class ListView extends React.Component {
           >
             Create
           </Button>
+          {this.state.selectedRecordId && <Button
+            color="primary" 
+            startIcon={<FontAwesomeIcon icon={faEye} size="md" />}
+            size="small"
+            onClick={() => this.props.history.push({ 
+              pathname: this.props.location.pathname + "/" + this.state.selectedRecordId
+            })}
+          >
+            View
+          </Button>}
         </Box>
         <Box style={{ marginLeft: "auto" }}>
           <GridToolbarColumnsButton />
@@ -92,7 +103,8 @@ class ListView extends React.Component {
       return {
         field: fieldMetadata.technicalName,
         headerName: fieldMetadata.businessName,
-        type: fieldMetadata.type
+        type: fieldMetadata.type,
+        width: fieldMetadata.width
       }
     })
 
@@ -114,6 +126,7 @@ class ListView extends React.Component {
         onFilterModelChange={(model) => this.setState({ filter: model, loading: true }, () => this.fetchRecords())}
         components={{ Toolbar: this.renderToolbar.bind(this) }}
         error={this.state.error}
+        onSelectionModelChange={(selections) => this.setState({ selectedRecordId: selections.length ? selections[0] : undefined })}
       />
     </div>;
   }

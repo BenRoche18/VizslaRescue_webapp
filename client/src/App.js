@@ -64,18 +64,18 @@ class App extends React.Component {
   }
 
   entityRoute(props) {
-    const entityMetadata = this.state.metadata.find((it) => it.technicalName === props.match.params.entity);
-
-    if(entityMetadata) {
-      if(props.match.params.id || new URLSearchParams(props.location.search).has("create")) {
-        return <RecordView metadata={entityMetadata} key={entityMetadata.technicalName} />
-      } else {
-        return <ListView metadata={entityMetadata} key={entityMetadata.technicalName} />
-      }
+    if(props.match.params.id || new URLSearchParams(props.location.search).has("create")) {
+      return <RecordView 
+        metadata={this.state.metadata}
+        entity={props.match.params.entity}
+        key={props.match.params.entity}
+      />
     } else {
-      return <Typography>
-        Requested Entity ({props.match.params.entity}) Not Found
-      </Typography>
+      return <ListView 
+        metadata={this.state.metadata}
+        entity={props.match.params.entity}
+        key={props.match.params.entity} 
+      />
     }
   }
 

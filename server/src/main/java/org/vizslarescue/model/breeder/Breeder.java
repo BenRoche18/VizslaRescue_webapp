@@ -33,6 +33,7 @@ public class Breeder extends GenericEntity {
         description.setBusinessName("Breeders");
         description.setTechnicalName("breeders");
         description.setIcon("user");
+        description.setAlternativeKey("names");
         description.setFields(Arrays.asList(
             new FieldDescription("ID", "id", FieldType.ID, 100),
             new TextFieldDescription("Names", "names", false, 200),

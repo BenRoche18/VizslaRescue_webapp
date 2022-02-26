@@ -9,6 +9,7 @@ public class EntityDescription {
   private String technicalName;
   private String businessName;
   private String icon;
+  private String alternativeKey;
 
   private List<FieldDescription> fields;
 }

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import org.vizslarescue.Utils.GenericEntity;
 import org.vizslarescue.model.litter.Litter;
 import org.vizslarescue.model.metadata.EntityDescription;
+import org.vizslarescue.model.metadata.EntityFieldDescription;
 import org.vizslarescue.model.metadata.FieldDescription;
 import org.vizslarescue.model.metadata.FieldType;
 import org.vizslarescue.model.metadata.TextFieldDescription;
@@ -41,12 +42,13 @@ public class Dog extends GenericEntity {
         description.setBusinessName("Dogs");
         description.setTechnicalName("dogs");
         description.setIcon("dog");
+        description.setAlternativeKey("name");
         description.setFields(Arrays.asList(
             new FieldDescription("ID", "id", FieldType.ID, 100),
             new TextFieldDescription("Name", "name", false, 200),
             new TextFieldDescription("Gender", "gender", false, 100).acceptedValues(Gender.values()),
             new TextFieldDescription("Additional Details", "additionalDetails", true, 300),
-            new FieldDescription("Litter", "litter", FieldType.ENTITY, 100)
+            new EntityFieldDescription("Litter", "litter", 100, "litters")
         ));
 
         return description;

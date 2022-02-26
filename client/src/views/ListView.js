@@ -1,4 +1,4 @@
-import { Box, Button, withStyles } from "@material-ui/core";
+import { Box, Button, withStyles, Typography } from "@material-ui/core";
 import { DataGrid, GridToolbarContainer, GridToolbarExport, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector } from "@material-ui/data-grid"
 import React from "react";
 import axios from 'axios';
@@ -46,17 +46,18 @@ class ListView extends React.Component {
         .join(",")
     }
 
-    axios.get("/api/" + this.props.metadata.technicalName, { params })
+    axios.get("/api/" + this.props.entity, { params })
       .then(res => {
         this.setState({ 
           records: res.data.content.map((record) => flatten(record)),
           rowCount: res.data.totalElements,
-          loading: false })
+          loading: false 
+        })
       })
       .catch(err => {
           this.setState({
-          error: err.response.data,
-          loading: false
+            error: err.response.data,
+            loading: false
           })
       })
   }
@@ -98,37 +99,44 @@ class ListView extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const entityMetadata = this.props.metadata.find(it => it.technicalName === this.props.entity)
 
-    const columns = this.props.metadata.fields.map((fieldMetadata) => {
-      return {
-        field: fieldMetadata.technicalName,
-        headerName: fieldMetadata.businessName,
-        type: fieldMetadata.type,
-        width: fieldMetadata.width
-      }
-    })
-
-    return <div className={classes.gridContainer}>
-      <DataGrid
-        columns={columns}
-        rows={this.state.records}
-        paginationMode="server"
-        sortingMode="server"
-        filterMode="server"
-        autoHeight
-        loading={this.state.loading}
-        onPageChange={(page) => this.setState({ page: page, loading: true }, () => this.fetchRecords())}
-        onPageSizeChange={(size) => this.setState({ pageSize: size, loading: true }, () => this.fetchRecords())}
-        rowCount={this.state.rowCount}
-        pageSize={this.state.size}
-        page={this.state.page}
-        onSortModelChange={(model) => this.setState({ sortKeys: model, loading: true }, () => this.fetchRecords())}
-        onFilterModelChange={(model) => this.setState({ filter: model, loading: true }, () => this.fetchRecords())}
-        components={{ Toolbar: this.renderToolbar.bind(this) }}
-        error={this.state.error}
-        onSelectionModelChange={(selections) => this.setState({ selectedRecordId: selections.length ? selections[0] : undefined })}
-      />
-    </div>;
+    if(entityMetadata) {
+      const columns = entityMetadata.fields.map((fieldMetadata) => {
+        return {
+          field: fieldMetadata.technicalName,
+          headerName: fieldMetadata.businessName,
+          type: fieldMetadata.type,
+          width: fieldMetadata.width
+        }
+      })
+  
+      return <div className={classes.gridContainer}>
+        <DataGrid
+          columns={columns}
+          rows={this.state.records}
+          paginationMode="server"
+          sortingMode="server"
+          filterMode="server"
+          autoHeight
+          loading={this.state.loading}
+          onPageChange={(page) => this.setState({ page: page, loading: true }, () => this.fetchRecords())}
+          onPageSizeChange={(size) => this.setState({ pageSize: size, loading: true }, () => this.fetchRecords())}
+          rowCount={this.state.rowCount}
+          pageSize={this.state.size}
+          page={this.state.page}
+          onSortModelChange={(model) => this.setState({ sortKeys: model, loading: true }, () => this.fetchRecords())}
+          onFilterModelChange={(model) => this.setState({ filter: model, loading: true }, () => this.fetchRecords())}
+          components={{ Toolbar: this.renderToolbar.bind(this) }}
+          error={this.state.error}
+          onSelectionModelChange={(selections) => this.setState({ selectedRecordId: selections.length ? selections[0] : undefined })}
+        />
+      </div>;
+    } else {
+      return <Typography>
+      Requested Entity ({this.props.entity}) not found
+    </Typography>
+    }
   }
 }
 

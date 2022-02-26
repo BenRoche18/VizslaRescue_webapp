@@ -14,6 +14,7 @@ import org.vizslarescue.Utils.GenericEntity;
 import org.vizslarescue.model.breeder.Breeder;
 import org.vizslarescue.model.dog.Dog;
 import org.vizslarescue.model.metadata.EntityDescription;
+import org.vizslarescue.model.metadata.EntityFieldDescription;
 import org.vizslarescue.model.metadata.FieldDescription;
 import org.vizslarescue.model.metadata.FieldType;
 import org.vizslarescue.model.metadata.TextFieldDescription;
@@ -54,9 +55,9 @@ public class Litter extends GenericEntity {
             new FieldDescription("Date", "date", FieldType.DATE, 150),
             new FieldDescription("Was Cesarean", "wasCesarean", FieldType.BOOLEAN, 100),
             new TextFieldDescription("Additional Details", "additionalDetails", true, 300),
-            new FieldDescription("Breeder", "breeder", FieldType.ENTITY, 100),
-            new FieldDescription("Sire", "sire", FieldType.ENTITY, 100),
-            new FieldDescription("Dam", "dam", FieldType.ENTITY, 100)
+            new EntityFieldDescription("Breeder", "breeder", 100, "breeders"),
+            new EntityFieldDescription("Sire", "sire", 100, "dogs"),
+            new EntityFieldDescription("Dam", "dam", 100, "dogs")
         ));
 
         return description;

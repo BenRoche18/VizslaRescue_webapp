@@ -15,6 +15,7 @@ import javax.validation.constraints.PositiveOrZero;
 import org.vizslarescue.Utils.GenericEntity;
 import org.vizslarescue.model.dog.Dog;
 import org.vizslarescue.model.metadata.EntityDescription;
+import org.vizslarescue.model.metadata.EntityFieldDescription;
 import org.vizslarescue.model.metadata.FieldDescription;
 import org.vizslarescue.model.metadata.FieldType;
 import org.vizslarescue.model.metadata.TextFieldDescription;
@@ -51,7 +52,7 @@ public class ElbowScoreRecord extends GenericEntity {
             new FieldDescription("Date", "date", FieldType.DATE, 150),
             new FieldDescription("Score", "score", FieldType.NUMBER, 100),            
             new TextFieldDescription("Additional Details", "additionalDetails", true, 300),
-            new FieldDescription("Dog", "dog", FieldType.ENTITY, 100)
+            new EntityFieldDescription("Dog", "dog", 100, "dogs")
         ));
 
         return description;

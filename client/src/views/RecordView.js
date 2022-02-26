@@ -69,7 +69,7 @@ class RecordView extends React.Component {
   async fetch() {
     this.setState({ loading: true });
 
-    axios.get("/api/" + this.props.metadata.technicalName + "/" + this.id)
+    axios.get("/api/" + this.props.entity + "/" + this.id)
     .then(res => {
       this.setState({ 
       record: flatten(res.data),
@@ -87,7 +87,7 @@ class RecordView extends React.Component {
   async delete() {
     this.setState({ loading: true });
 
-    axios.delete("/api/" + this.props.metadata.technicalName + "/" +  this.id)
+    axios.delete("/api/" + this.props.entity + "/" +  this.id)
     .then(this.onClose.bind(this))
     .catch(err => {
       this.setState({
@@ -100,7 +100,7 @@ class RecordView extends React.Component {
   async create() {
     this.setState({ loading: true });
 
-    axios.post("/api/" + this.props.metadata.technicalName, unflatten(this.state.record, { overwrite: true }))
+    axios.post("/api/" + this.props.entity, unflatten(this.state.record, { overwrite: true }))
     .then(res => {
       this.setState({
         record: flatten(res.data),
@@ -121,7 +121,7 @@ class RecordView extends React.Component {
   async edit() {
     this.setState({ loading: true });
 
-    axios.put("/api/" + this.props.metadata.technicalName + "/" +  this.id, unflatten(this.state.record, { overwrite: true }))
+    axios.put("/api/" + this.props.entity + "/" +  this.id, unflatten(this.state.record, { overwrite: true }))
     .then(res => {
         this.setState({ 
         record: flatten(res.data),
@@ -140,7 +140,7 @@ class RecordView extends React.Component {
   {
     let record = this.state.record;
     record[field] = value;
-    return this.setState({ record: record });
+    return this.setState({ record: flatten(record) });
   }
 
   onClose() {
@@ -253,7 +253,7 @@ class RecordView extends React.Component {
     </AppBar>
   }
 
-  renderProperties() {
+  renderProperties(entityMetadata) {
     const { classes } = this.props;
 
     return <div>
@@ -262,11 +262,13 @@ class RecordView extends React.Component {
       </Typography>
       <Divider className={classes.formDivider} />
       <Grid container spacing={2} className={classes.formSection}>
-        { this.props.metadata.fields.map((fieldMetadata) => <Grid item xs={12}>
+        { entityMetadata.fields.map((fieldMetadata) => <Grid item xs={12}>
           <Field 
-            metadata={fieldMetadata}
+            metadata={this.props.metadata}
+            entity={this.props.entity}
+            fieldMetadata={fieldMetadata}
             readOnly={!this.editMode && !this.createMode}
-            value={this.state.record[fieldMetadata.technicalName]}
+            value={unflatten(this.state.record, { overwrite: true })[fieldMetadata.technicalName]}
             onChange={(value) => this.updateRecord(fieldMetadata.technicalName, value)}
           />
         </Grid>) }
@@ -274,7 +276,7 @@ class RecordView extends React.Component {
     </div>
   }
 
-  renderBody() {
+  renderBody(entityMetadata) {
     if(this.state.error) {
       return <div>
         <Typography variant="h6">
@@ -288,7 +290,7 @@ class RecordView extends React.Component {
     } else {
       return <div>
         <form>
-          {this.renderProperties()}
+          {this.renderProperties(entityMetadata)}
         </form>
         { this.state.pendingDelete && this.renderDeleteConfirmationDialog() }
       </div>
@@ -297,18 +299,25 @@ class RecordView extends React.Component {
 
   render() {
     const { classes } = this.props;
+    const entityMetadata = this.props.metadata.find(it => it.technicalName === this.props.entity);
 
-    return <Dialog
-      fullScreen
-      open
-      onClose={this.onClose.bind(this)}
-      TransitionComponent={Transition}
-    >
-      {this.renderToolbar()}
-      <Paper className={classes.body}>
-        {this.state.loading ? <CircularProgress /> : this.renderBody()}
-      </Paper>
-    </Dialog>
+    if(entityMetadata) {
+      return <Dialog
+        fullScreen
+        open
+        onClose={this.onClose.bind(this)}
+        TransitionComponent={Transition}
+      >
+        {this.renderToolbar()}
+        <Paper className={classes.body}>
+          {this.state.loading ? <CircularProgress /> : this.renderBody(entityMetadata)}
+        </Paper>
+      </Dialog>
+    } else {
+      return <Typography>
+      Requested Entity ({this.props.entity}) not found
+    </Typography>
+    }
   }
 }
 

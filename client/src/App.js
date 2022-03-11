@@ -38,17 +38,16 @@ const styles = (theme) => ({
 });
 
 class App extends React.Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
-      metadata: []
+      metadata: {}
     }
 
     axios.get("/api/metadata")
     .then(res => {
-      this.setState({ metadata: res.data })
+      this.setState({ metadata: Object.assign({}, ...res.data.map((it) => ({[it.technicalName]: it})))})
     })
   }
 
@@ -102,7 +101,7 @@ class App extends React.Component {
           <Toolbar />
           <div className={classes.drawerContainer}>
             <List>
-              { this.state.metadata.map(entityMetadata => this.renderNavLink(entityMetadata)) }
+              { Object.values(this.state.metadata).map(entityMetadata => this.renderNavLink(entityMetadata)) }
             </List>
             <Divider />
           </div>

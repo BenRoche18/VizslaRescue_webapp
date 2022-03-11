@@ -99,14 +99,25 @@ class ListView extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const entityMetadata = this.props.metadata.find(it => it.technicalName === this.props.entity)
+    const entityMetadata = this.props.metadata[this.props.entity];
 
     if(entityMetadata) {
       const columns = entityMetadata.fields.map((fieldMetadata) => {
+        let type = fieldMetadata.type;
+        
+        switch(fieldMetadata.type) {
+          case "text":
+            type = "string";
+            break;
+          case "id":
+            type = "number";
+            break;
+        }
+
         return {
           field: fieldMetadata.technicalName,
           headerName: fieldMetadata.businessName,
-          type: fieldMetadata.type,
+          type: type,
           width: fieldMetadata.width
         }
       })

@@ -2,10 +2,14 @@ package org.vizslarescue.service.metadata;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.vizslarescue.model.breeder.Breeder;
 import org.vizslarescue.model.dog.Dog;
 import org.vizslarescue.model.elbow_score.ElbowScoreRecord;
@@ -28,5 +32,20 @@ public class MetadataContoller {
   @GetMapping("")
   public List<EntityDescription> get() {
     return this.entities;
+  }
+
+  @GetMapping("/{entity}")
+  public EntityDescription getEntity(
+    @PathVariable String entity
+  ) {
+    Optional<EntityDescription> description = this.entities.stream()
+      .filter(it -> it.getTechnicalName().equals(entity))
+      .findAny();
+
+    if(!description.isPresent()) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find metadata for provided entity");
+    } else {
+      return description.get();
+    }
   }
 }

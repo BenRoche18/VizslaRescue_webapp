@@ -27,11 +27,11 @@ public class GenericSpecification<T> implements Specification<T> {
             case EQ:
                 return criteriaBuilder.equal(root.get(key), arg);
             case CONTAINS:
-                return criteriaBuilder.like(root.get(key), "%" + arg + "%");
+                return criteriaBuilder.like(root.get(key).as(String.class), "%" + arg + "%");
             case STARTS_WITH:
-                return criteriaBuilder.like(root.get(key), arg + "%");
+                return criteriaBuilder.like(root.get(key).as(String.class), arg + "%");
             case ENDS_WITH:
-                return criteriaBuilder.like(root.get(key), "%" + arg);
+                return criteriaBuilder.like(root.get(key).as(String.class), "%" + arg);
             case NE:
                 return criteriaBuilder.notEqual(root.get(key), arg);
             case GT:

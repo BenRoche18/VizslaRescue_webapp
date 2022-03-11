@@ -299,7 +299,7 @@ class RecordView extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const entityMetadata = this.props.metadata.find(it => it.technicalName === this.props.entity);
+    const entityMetadata = this.props.metadata[this.props.entity];
 
     if(entityMetadata) {
       return <Dialog

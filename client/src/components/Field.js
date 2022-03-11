@@ -1,6 +1,6 @@
 import React from "react";
 import axios from 'axios';
-import { TextField, Checkbox, FormControlLabel } from "@material-ui/core";
+import { TextField, Checkbox, FormControlLabel, MenuItem, Select } from "@material-ui/core";
 import { Autocomplete } from '@material-ui/lab';
 import DateAdapter from '@mui/lab/AdapterDateFns';
 import { DesktopDatePicker, LocalizationProvider } from "@mui/lab"
@@ -11,17 +11,16 @@ class Field extends React.Component {
     super(props);
 
     this.state = {
-      options: [],
-      search: undefined
+      options: []
     }
   }
 
-  async updateOptions() {
+  async updateOptions(key, value) {
     const params = {
       page: 0,
       size: 20,
-      sortKeys: "names;asc",
-      filters: "names contains " + this.state.search
+      sortKeys: key + ";asc",
+      filters: key + " startsWith " + value
     }
 
     axios.get("/api/" + this.props.fieldMetadata.technicalName + "s", { params })
@@ -31,15 +30,17 @@ class Field extends React.Component {
   }
 
   renderEntityField() {
-    const entity = this.props.metadata.find(it => it.technicalName = this.props.fieldMetadata.entity)
-    const renderLabel = (it => it ? it[entity.alternativeKey] + " (" + it.id + ")" : undefined)
+    const entityMetadata = this.props.metadata[this.props.fieldMetadata.entity];
+    const renderLabel = (it => it ? it[entityMetadata.alternativeKey ?? "id"] + (entityMetadata.alternativeKey ? " (" + it.id + ")" : "") : undefined)
 
     if(this.props.readOnly) {
       return <TextField
         value={renderLabel(this.props.value)}
         label={this.props.fieldMetadata.businessName}
         variant="outlined"
-        readOnly
+        InputProps={{
+          readOnly: this.props.readOnly
+        }} 
       />
     } else {
       return <Autocomplete
@@ -50,7 +51,7 @@ class Field extends React.Component {
         onInputChange={(event, value) => {
           if(value)
           {
-            this.setState({ search: value }, this.updateOptions.bind(this))
+            this.updateOptions(entityMetadata.alternativeKey ?? "id", value);
           }
         }}
         onChange={(event, value) => {
@@ -96,21 +97,23 @@ class Field extends React.Component {
     />
   }
 
-  renderEnumField() {
-
-  }
-
   renderTextField() {
     return <TextField
       label={this.props.fieldMetadata.businessName}
+      select={!this.props.readOnly && this.props.fieldMetadata.acceptedValues}
       value={this.props.value}
       variant="outlined"
       onChange={(event) => this.props.onChange(event.target.value)}
       InputProps={{
         readOnly: this.props.readOnly
-      }} 
+      }}
+      SelectProps={{
+        native: true
+      }}
        multiline={this.props.fieldMetadata.multiline}
-    />
+    >
+      {this.props.fieldMetadata.acceptedValues?.map(it => <option>{it}</option>)}
+    </TextField>
   }
 
   render()  {

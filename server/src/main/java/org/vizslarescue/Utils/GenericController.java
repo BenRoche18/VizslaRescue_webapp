@@ -56,7 +56,6 @@ public abstract class GenericController<T extends GenericEntity> {
         @PathVariable Integer id,
         @RequestBody T req
     ) {
-        T obj = get(id);
         req.setId(id);
         return repository.save(req);
     }

@@ -1,10 +1,11 @@
 import React from 'react';
 import axios from 'axios';
-import { AppBar, CssBaseline, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, withStyles } from '@material-ui/core';
+import { AppBar, CssBaseline, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, withStyles, Button } from '@material-ui/core';
 import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { fas } from '@fortawesome/free-solid-svg-icons';
+import Cookies from 'js-cookie';
 
 import Home from './views/Home';
 import RecordView from './views/RecordView';
@@ -51,17 +52,6 @@ class App extends React.Component {
     })
   }
 
-  renderNavLink(entityMetadata) {
-    return <Link to={"/" + entityMetadata.technicalName} style={{ color: "inherit", textDecoration: "none" }}>
-      <ListItem button>
-        <ListItemIcon>
-          <FontAwesomeIcon size="2x" icon={entityMetadata.icon ?? "question"} />
-        </ListItemIcon>
-        <ListItemText primary={entityMetadata.businessName} />
-      </ListItem>
-    </Link>
-  }
-
   entityRoute(props) {
     if(props.match.params.id || new URLSearchParams(props.location.search).has("create")) {
       return <RecordView 
@@ -78,6 +68,36 @@ class App extends React.Component {
     }
   }
 
+  renderUserControls() {
+    if(Cookies.get("JSESSIONID"))
+    {
+      return <Link to="/logout" style={{ color: "inherit", textDecoration: "none" }} >
+      <Button color="inherit">
+        Logout
+      </Button>
+    </Link>
+    }
+    else
+    {
+      return <Link to="/login" style={{ color: "inherit", textDecoration: "none" }} >
+        <Button color="inherit">
+          Login
+        </Button>
+      </Link>
+    }
+  }
+
+  renderNavLink(entityMetadata) {
+    return <Link to={"/dashboard/" + entityMetadata.technicalName} style={{ color: "inherit", textDecoration: "none" }}>
+      <ListItem button>
+        <ListItemIcon>
+          <FontAwesomeIcon size="2x" icon={entityMetadata.icon ?? "question"} />
+        </ListItemIcon>
+        <ListItemText primary={entityMetadata.businessName} />
+      </ListItem>
+    </Link>
+  }
+
   render() {
     const { classes } = this.props;
 
@@ -85,10 +105,13 @@ class App extends React.Component {
       <div className={classes.root} >
         <CssBaseline />
         <AppBar position="fixed" className={classes.appBar}>
-          <Toolbar>
-            <Typography variant="h6" noWrap>
-              Vizsla Rescue Dashboard
-            </Typography>
+          <Toolbar style={{ justifyContent: "space-between" }}>
+            <Link to="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>
+              <Typography variant="h6" noWrap>
+                Vizsla Rescue Dashboard
+              </Typography>
+            </Link>
+            { this.renderUserControls() }
           </Toolbar>
         </AppBar>
         <Drawer
@@ -109,9 +132,9 @@ class App extends React.Component {
         <main className={classes.content}>
           <Toolbar />
           <Switch>
-            <Route path="/:entity/:id" render={(props) => this.entityRoute(props)} />
-            <Route path="/:entity" render={(props) => this.entityRoute(props)} />
-            <Route path="/" component={Home} />
+            <Route path="/dashboard/:entity/:id" render={(props) => this.entityRoute(props)} />
+            <Route path="/dashboard/:entity" render={(props) => this.entityRoute(props)} />
+            <Route path="/dashboard" component={Home} />
           </Switch>
         </main>
       </div>

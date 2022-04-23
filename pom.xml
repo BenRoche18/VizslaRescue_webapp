@@ -19,9 +19,9 @@
 	<properties>
 		<java.version>11</java.version>
 		<frontend-src-dir>${project.basedir}/client</frontend-src-dir>
-		<node.version>v12.3.1</node.version>
-		<npmVersion>6.13.1</npmVersion>
-		<frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+		<node.version>v16.14.2</node.version>
+		<npmVersion>8.7.0</npmVersion>
+		<frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
 	</properties>
 
 	<dependencies>
@@ -100,6 +100,14 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
+						<phase>generate-resources</phase>
+                    </execution>
+					<execution>
+                        <id>npm-install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+						<phase>generate-resources</phase>
                         <configuration>
                             <arguments>install</arguments>
                         </configuration>
@@ -111,7 +119,7 @@
                         </goals>
 						<phase>prepare-package</phase>
                         <configuration>
-                            <arguments>build</arguments>
+                            <arguments>run build</arguments>
                         </configuration>
                     </execution>
                 </executions>
@@ -157,6 +165,19 @@
 							<version>1.4.2.Final</version>
 						</path>
 					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-clean-plugin</artifactId>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>${frontend-src-dir}/build</directory>
+						</fileset>
+						<fileset>
+							<directory>server/target</directory>
+						</fileset>
+					</filesets>
 				</configuration>
 			</plugin>
 		</plugins>

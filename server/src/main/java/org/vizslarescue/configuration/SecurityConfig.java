@@ -31,13 +31,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   protected void configure(HttpSecurity http) throws Exception
   {
     http.authorizeRequests()
-      .antMatchers(HttpMethod.GET, "/api/*").hasRole("USER")
-      .antMatchers("/api").hasRole("ADMIN")
+      .antMatchers(HttpMethod.GET, "/api/**").hasRole("USER")
+      .antMatchers("/api/**").hasRole("ADMIN")
       .antMatchers("/").permitAll()
-      .and()
+    .and()
       .formLogin()
-      .and()
-      .logout();
+      .defaultSuccessUrl("/", true)
+    .and()
+      .logout()
+      .logoutSuccessUrl("/");
   }
 
   @Bean

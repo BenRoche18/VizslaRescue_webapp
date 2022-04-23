@@ -5,7 +5,7 @@ import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 import Home from './views/Home';
 import RecordView from './views/RecordView';
@@ -43,12 +43,16 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      metadata: {}
+      metadata: {},
+      signedIn: false
     }
 
     axios.get("/api/metadata")
     .then(res => {
-      this.setState({ metadata: Object.assign({}, ...res.data.map((it) => ({[it.technicalName]: it})))})
+      this.setState({ 
+        metadata: Object.assign({}, ...res.data.map((it) => ({[it.technicalName]: it}))),
+        signedIn: true
+      })
     })
   }
 
@@ -69,26 +73,22 @@ class App extends React.Component {
   }
 
   renderUserControls() {
-    if(Cookies.get("JSESSIONID"))
+    if(this.state.signedIn)
     {
-      return <Link to="/logout" style={{ color: "inherit", textDecoration: "none" }} >
-      <Button color="inherit">
-        Logout
-      </Button>
-    </Link>
+      return <Button onClick={() => window.location.replace("/logout")} color="inherit">
+      Logout
+    </Button>
     }
     else
     {
-      return <Link to="/login" style={{ color: "inherit", textDecoration: "none" }} >
-        <Button color="inherit">
-          Login
-        </Button>
-      </Link>
+      return <Button onClick={() => window.location.replace("/login")} color="inherit">
+        Login
+      </Button>
     }
   }
 
   renderNavLink(entityMetadata) {
-    return <Link to={"/dashboard/" + entityMetadata.technicalName} style={{ color: "inherit", textDecoration: "none" }}>
+    return <Link to={"/" + entityMetadata.technicalName} style={{ color: "inherit", textDecoration: "none" }}>
       <ListItem button>
         <ListItemIcon>
           <FontAwesomeIcon size="2x" icon={entityMetadata.icon ?? "question"} />
@@ -106,7 +106,7 @@ class App extends React.Component {
         <CssBaseline />
         <AppBar position="fixed" className={classes.appBar}>
           <Toolbar style={{ justifyContent: "space-between" }}>
-            <Link to="/dashboard" style={{ color: "inherit", textDecoration: "none" }}>
+            <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
               <Typography variant="h6" noWrap>
                 Vizsla Rescue Dashboard
               </Typography>
@@ -132,9 +132,9 @@ class App extends React.Component {
         <main className={classes.content}>
           <Toolbar />
           <Switch>
-            <Route path="/dashboard/:entity/:id" render={(props) => this.entityRoute(props)} />
-            <Route path="/dashboard/:entity" render={(props) => this.entityRoute(props)} />
-            <Route path="/dashboard" component={Home} />
+            <Route path="/:entity/:id" render={(props) => this.entityRoute(props)} />
+            <Route path="/:entity" render={(props) => this.entityRoute(props)} />
+            <Route path="" component={Home} />
           </Switch>
         </main>
       </div>

@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.vizslarescue.model.ping.Ping;
 
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping(path = "/api/ping")
 public class PingController {
 
-    @GetMapping("/ping")
+    @GetMapping("")
     public @ResponseBody Ping ping() {
         return Ping.create("OKAY");
     }

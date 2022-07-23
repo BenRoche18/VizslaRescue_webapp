@@ -23,7 +23,7 @@ public class TextFieldDescription extends FieldDescription {
     return this;
   }
 
-  public <T extends Enum> TextFieldDescription acceptedValues(T[] values)
+  public TextFieldDescription acceptedValues(Enum[] values)
   {
     this.acceptedValues = Arrays.asList(values).stream().map(Enum::toString).collect(Collectors.toList());
     return this;

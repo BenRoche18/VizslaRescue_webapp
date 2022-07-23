@@ -1,11 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import { AppBar, CssBaseline, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, withStyles, Button } from '@material-ui/core';
+import { AppBar, CssBaseline, Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, Toolbar, Typography, withStyles, Button, Avatar, Tooltip } from '@material-ui/core';
 import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import Cookies from "js-cookie";
 
 import Home from './views/Home';
 import RecordView from './views/RecordView';
@@ -43,16 +42,24 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      metadata: {},
-      signedIn: false
+      metadata: {}
     }
 
     axios.get("/api/metadata")
     .then(res => {
       this.setState({ 
-        metadata: Object.assign({}, ...res.data.map((it) => ({[it.technicalName]: it}))),
-        signedIn: true
+        metadata: Object.assign({}, ...res.data.map((it) => ({[it.technicalName]: it})))
       })
+    })
+
+    axios.get("/api/user")
+    .then(res => {
+      if(res.data.username)
+      {
+        this.setState({ 
+          profile: res.data
+        })
+      }
     })
   }
 
@@ -73,11 +80,18 @@ class App extends React.Component {
   }
 
   renderUserControls() {
-    if(this.state.signedIn)
+    if(this.state.profile)
     {
-      return <Button onClick={() => window.location.replace("/logout")} color="inherit">
-      Logout
-    </Button>
+      return <span style={{ display: "flex" }}>
+        <Button onClick={() => window.location.replace("/logout")} color="inherit">
+          Logout
+        </Button>
+        <Tooltip title={this.state.profile.username}>
+          <Avatar>
+            <FontAwesomeIcon icon="user" />
+          </Avatar>
+        </Tooltip>
+      </span>
     }
     else
     {

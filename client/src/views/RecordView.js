@@ -180,7 +180,7 @@ class RecordView extends React.Component {
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={this.delete.bind(this)} color="secondary" disabled={this.state.dialogInput != this.id}>
+        <Button onClick={this.delete.bind(this)} color="secondary" disabled={this.state.dialogInput !== this.id}>
           Delete
         </Button>
       </DialogActions>

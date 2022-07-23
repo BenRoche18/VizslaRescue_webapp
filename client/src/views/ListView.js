@@ -103,7 +103,7 @@ class ListView extends React.Component {
 
     if(entityMetadata) {
       const columns = entityMetadata.fields.map((fieldMetadata) => {
-        let type = fieldMetadata.type;
+        let type;
         
         switch(fieldMetadata.type) {
           case "text":
@@ -112,6 +112,8 @@ class ListView extends React.Component {
           case "id":
             type = "number";
             break;
+          default:
+            type = fieldMetadata.type;
         }
 
         return {

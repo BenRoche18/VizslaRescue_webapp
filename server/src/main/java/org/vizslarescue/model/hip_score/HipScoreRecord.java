@@ -3,6 +3,7 @@ package org.vizslarescue.model.hip_score;
 import java.util.Arrays;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,8 +34,10 @@ public class HipScoreRecord extends GenericEntity {
     private String brs;
     private Date date;
     @PositiveOrZero
+    @Column(name = "left_score")
     private int left;
     @PositiveOrZero
+    @Column(name = "right_score")
     private int right;
     private String additionalDetails;
 

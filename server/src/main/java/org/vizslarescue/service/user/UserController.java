@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -37,7 +36,6 @@ public class UserController implements UserDetailsService
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
-  @Secured("ROLE_USER")
   @GetMapping("")
   public @ResponseBody User getUser(Authentication authentication)
   {
@@ -55,7 +53,6 @@ public class UserController implements UserDetailsService
     return user;
   }
 
-  @Secured("ROLE_ADMIN")
   @PostMapping("")
   public @ResponseBody User saveUser(
       @RequestBody User user

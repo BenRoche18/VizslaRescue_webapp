@@ -7,6 +7,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
 import Home from './views/Home';
+import Workbench from './views/Workbench';
 import RecordView from './views/RecordView';
 import ListView from './views/ListView';
 
@@ -139,6 +140,14 @@ class App extends React.Component {
           <div className={classes.drawerContainer}>
             <List>
               { Object.values(this.state.metadata).map(entityMetadata => this.renderNavLink(entityMetadata)) }
+              <Link to="/workbench" style={{ color: "inherit", textDecoration: "none" }}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <FontAwesomeIcon size="2x" icon="wrench" />
+                  </ListItemIcon>
+                  <ListItemText primary="SQL Workbench" />
+                </ListItem>
+              </Link>
             </List>
             <Divider />
           </div>
@@ -146,6 +155,7 @@ class App extends React.Component {
         <main className={classes.content}>
           <Toolbar />
           <Switch>
+            <Route path="/workbench" component={Workbench} />
             <Route path="/:entity/:id" render={(props) => this.entityRoute(props)} />
             <Route path="/:entity" render={(props) => this.entityRoute(props)} />
             <Route path="" component={Home} />

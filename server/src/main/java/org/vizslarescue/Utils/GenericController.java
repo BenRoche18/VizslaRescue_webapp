@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +31,6 @@ public abstract class GenericController<T extends GenericEntity> {
         this.mapper = mapper;
     }
 
-    @Secured("ROLE_ADMIN")
     @PostMapping("")
     public T add(
         @Valid @RequestBody T req
@@ -40,7 +38,6 @@ public abstract class GenericController<T extends GenericEntity> {
         return repository.save(req);
     }
 
-    @Secured("ROLE_USER")
     @GetMapping("/{id}")
     public T get(
         @PathVariable Integer id
@@ -54,7 +51,6 @@ public abstract class GenericController<T extends GenericEntity> {
         }
     }
 
-    @Secured("ROLE_ADMIN")
     @PutMapping("/{id}")
     public T edit(
         @PathVariable Integer id,
@@ -64,7 +60,6 @@ public abstract class GenericController<T extends GenericEntity> {
         return repository.save(req);
     }
 
-    @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     public void delete(
         @PathVariable Integer id
@@ -72,7 +67,6 @@ public abstract class GenericController<T extends GenericEntity> {
         repository.deleteById(id);
     }
 
-    @Secured("ROLE_USER")
     @GetMapping("")
     public Page<T> get(
         @RequestParam(defaultValue = "0") int page,

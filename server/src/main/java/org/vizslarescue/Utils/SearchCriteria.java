@@ -1,4 +1,4 @@
-package org.vizslarescue.Utils;
+package org.vizslarescue.utils;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

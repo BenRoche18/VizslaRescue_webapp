@@ -1,16 +1,18 @@
 package org.vizslarescue.model.dog;
 
 import java.util.Arrays;
+import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.vizslarescue.Utils.GenericEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.EqualsAndHashCode;
+import org.vizslarescue.model.elbow_score.ElbowScoreRecord;
+import org.vizslarescue.model.hip_score.HipScoreRecord;
+import org.vizslarescue.utils.GenericEntity;
 import org.vizslarescue.model.litter.Litter;
 import org.vizslarescue.model.metadata.EntityDescription;
 import org.vizslarescue.model.metadata.EntityFieldDescription;
@@ -22,6 +24,7 @@ import lombok.Data;
 
 @Data
 @Entity
+@EqualsAndHashCode(callSuper=false)
 public class Dog extends GenericEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -29,12 +32,23 @@ public class Dog extends GenericEntity {
 
     @NotBlank
     private String name;
+
     @NotNull
     private Gender gender;
+
     private String additionalDetails;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("puppies")
     private Litter litter;
+
+    @OneToMany(mappedBy="dog", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("dog")
+    private List<ElbowScoreRecord> elbowScores;
+
+    @OneToMany(mappedBy="dog", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("dog")
+    private List<HipScoreRecord> hipScores;
 
     public static EntityDescription getDescription() {
         EntityDescription description = new EntityDescription();

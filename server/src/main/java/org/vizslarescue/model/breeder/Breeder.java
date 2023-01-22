@@ -1,14 +1,16 @@
 package org.vizslarescue.model.breeder;
 
 import java.util.Arrays;
+import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
-import org.vizslarescue.Utils.GenericEntity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.EqualsAndHashCode;
+import org.vizslarescue.model.dog.Dog;
+import org.vizslarescue.model.litter.Litter;
+import org.vizslarescue.utils.GenericEntity;
 import org.vizslarescue.model.metadata.EntityDescription;
 import org.vizslarescue.model.metadata.FieldDescription;
 import org.vizslarescue.model.metadata.FieldType;
@@ -18,6 +20,7 @@ import lombok.Data;
 
 @Data
 @Entity
+@EqualsAndHashCode(callSuper=false)
 public class Breeder extends GenericEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -25,7 +28,12 @@ public class Breeder extends GenericEntity {
 
     @NotBlank
     private String names;
+
     private String additionalDetails;
+
+    @OneToMany(mappedBy="breeder", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("breeder")
+    private List<Litter> litters;
 
     public static EntityDescription getDescription() {
         EntityDescription description = new EntityDescription();

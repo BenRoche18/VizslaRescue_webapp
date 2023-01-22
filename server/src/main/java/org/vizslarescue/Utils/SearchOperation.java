@@ -1,4 +1,4 @@
-package org.vizslarescue.Utils;
+package org.vizslarescue.utils;
 
 public enum SearchOperation {
     EQUALS,

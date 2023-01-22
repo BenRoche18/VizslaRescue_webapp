@@ -25,10 +25,9 @@ class Workbench extends React.Component {
   async executeSQL() {
     axios.post("/api/workbench", this.state.query, { headers: {"Content-Type": "text/plain"} })
       .then(res => {
-        console.log(Object.keys(res.data[0]))
         this.setState({ 
-          records: res.data.map((record) => flatten(record)),
-          columns: res.data.length > 0 ? Object.keys(res.data[0]).map((column) => {return {field: column, width: 200 }}) : [],
+          records: res.data.map((record, i) => ({...flatten(record), id: i})),
+          columns: res.data.length > 0 ? Object.keys(res.data[0]).map((column) => ({field: column, width: 200 })) : [],
           loading: false,
           error: undefined
         })

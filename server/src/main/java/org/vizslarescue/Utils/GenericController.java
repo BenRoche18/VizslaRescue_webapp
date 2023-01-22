@@ -1,4 +1,4 @@
-package org.vizslarescue.Utils;
+package org.vizslarescue.utils;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,30 +21,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 public abstract class GenericController<T extends GenericEntity> {
-
     protected final GenericRepository<T> repository;
     protected final ServiceMapperImpl mapper;
 
-    public GenericController(GenericRepository<T> repository, ServiceMapperImpl mapper)
-    {
+    public GenericController(GenericRepository<T> repository, ServiceMapperImpl mapper) {
         this.repository = repository;
         this.mapper = mapper;
     }
 
     @PostMapping("")
     public T add(
-        @Valid @RequestBody T req
+            @Valid @RequestBody T req
     ) {
         return repository.save(req);
     }
 
     @GetMapping("/{id}")
     public T get(
-        @PathVariable Integer id
+            @PathVariable Integer id
     ) {
         Optional<T> obj = repository.findById(id);
 
-        if(!obj.isPresent()) {
+        if (!obj.isPresent()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find with provided id");
         } else {
             return obj.get();
@@ -53,8 +51,8 @@ public abstract class GenericController<T extends GenericEntity> {
 
     @PutMapping("/{id}")
     public T edit(
-        @PathVariable Integer id,
-        @RequestBody T req
+            @PathVariable Integer id,
+            @RequestBody T req
     ) {
         req.setId(id);
         return repository.save(req);
@@ -62,21 +60,21 @@ public abstract class GenericController<T extends GenericEntity> {
 
     @DeleteMapping("/{id}")
     public void delete(
-        @PathVariable Integer id
+            @PathVariable Integer id
     ) {
         repository.deleteById(id);
     }
 
     @GetMapping("")
     public Page<T> get(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "100") int size,
-        @RequestParam(required = false, defaultValue = "") List<String> sortKeys,
-        @RequestParam(required = false, defaultValue = "") List<String> filters
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size,
+            @RequestParam(required = false, defaultValue = "") List<String> sortKeys,
+            @RequestParam(required = false, defaultValue = "") List<String> filters
 
     ) {
-      Specification<T> specification = mapper.mapFilterKeys(filters);
-      Pageable pager = PageRequest.of(page, size, Sort.by(mapper.mapSortKeys(sortKeys)));
-      return repository.findAll(specification, pager);
+        Specification<T> specification = mapper.mapFilterKeys(filters);
+        Pageable pager = PageRequest.of(page, size, Sort.by(mapper.mapSortKeys(sortKeys)));
+        return repository.findAll(specification, pager);
     }
 }

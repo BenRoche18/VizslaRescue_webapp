@@ -1,4 +1,4 @@
-package org.vizslarescue.Utils;
+package org.vizslarescue.utils;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;

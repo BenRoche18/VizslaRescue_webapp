@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class TextFieldDescription extends FieldDescription {
   private final boolean multiline;
   private String regex;

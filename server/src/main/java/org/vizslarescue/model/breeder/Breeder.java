@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
-import org.vizslarescue.model.dog.Dog;
 import org.vizslarescue.model.litter.Litter;
 import org.vizslarescue.utils.GenericEntity;
 import org.vizslarescue.model.metadata.EntityDescription;

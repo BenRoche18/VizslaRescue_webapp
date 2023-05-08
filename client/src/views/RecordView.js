@@ -169,7 +169,7 @@ class RecordView extends React.Component {
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Type '{  this.id }' to confirm permanent deletion.
+          Type '{ this.id }' to confirm permanent deletion.
         </DialogContentText>
         <TextField
           value={this.state.dialogInput}

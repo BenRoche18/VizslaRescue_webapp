@@ -20,7 +20,6 @@ import org.vizslarescue.model.metadata.EntityDescription;
 @RequestMapping(path = "/api/metadata")
 @RestController
 public class MetadataContoller {
-
   private List<EntityDescription> entities = Arrays.asList(
     Breeder.getDescription(),
     Litter.getDescription(),

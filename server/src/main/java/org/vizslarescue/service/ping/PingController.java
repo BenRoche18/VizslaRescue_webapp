@@ -9,7 +9,6 @@ import org.vizslarescue.model.ping.Ping;
 @RestController
 @RequestMapping(path = "/api/ping")
 public class PingController {
-
     @GetMapping("")
     public @ResponseBody Ping ping() {
         return Ping.create("OKAY");

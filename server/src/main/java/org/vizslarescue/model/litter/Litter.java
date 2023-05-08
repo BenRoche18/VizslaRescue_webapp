@@ -9,7 +9,6 @@ import javax.validation.constraints.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.EqualsAndHashCode;
-import org.vizslarescue.model.elbow_score.ElbowScoreRecord;
 import org.vizslarescue.utils.GenericEntity;
 import org.vizslarescue.model.breeder.Breeder;
 import org.vizslarescue.model.dog.Dog;

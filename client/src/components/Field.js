@@ -23,7 +23,7 @@ class Field extends React.Component {
       filters: key + " startsWith " + value
     }
 
-    axios.get("/api/" + this.props.fieldMetadata.technicalName + "s", { params })
+    axios.get("/api/" + this.props.fieldMetadata.entity, { params })
     .then(res => {
       this.setState({ options: res.data.content })
     })
@@ -31,7 +31,7 @@ class Field extends React.Component {
 
   renderEntityField() {
     const entityMetadata = this.props.metadata[this.props.fieldMetadata.entity];
-    const renderLabel = (it => it ? it[entityMetadata.alternativeKey ?? "id"] + (entityMetadata.alternativeKey ? " (" + it.id + ")" : "") : undefined)
+    const renderLabel = (it => it ? it.id.toString() + (entityMetadata.alternativeKey ? " (" + it[entityMetadata.alternativeKey] + ")" : "") : undefined)
 
     if(this.props.readOnly) {
       return <TextField
@@ -51,7 +51,7 @@ class Field extends React.Component {
         onInputChange={(event, value) => {
           if(value)
           {
-            this.updateOptions(entityMetadata.alternativeKey ?? "id", value);
+            this.updateOptions("id", value);
           }
         }}
         onChange={(event, value) => {

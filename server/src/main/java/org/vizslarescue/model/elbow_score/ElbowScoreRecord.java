@@ -1,10 +1,8 @@
 package org.vizslarescue.model.elbow_score;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.vizslarescue.model.dog.Dog;
 import org.vizslarescue.model.metadata.*;
 import org.vizslarescue.utils.GenericEntity;
